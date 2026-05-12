@@ -3,23 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Easyroc</title>
+  <title>easyroc · ~/blog</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0c0c0e;
-      --bg-elevated: #141418;
-      --text: #f4f4f5;
-      --text-muted: #a1a1aa;
-      --accent: #c8f31a;
-      --accent-soft: rgba(200, 243, 26, 0.12);
-      --border: rgba(255, 255, 255, 0.06);
-      --radius: 14px;
-      --font-sans: "DM Sans", system-ui, sans-serif;
-      --font-display: "Fraunces", Georgia, serif;
-      --max: 1120px;
+      --bg: #08090a;
+      --panel: #0c0e12;
+      --green: #00e676;
+      --green-dim: rgba(0, 230, 118, 0.55);
+      --cyan: #00e5ff;
+      --text: #c8ffc8;
+      --muted: #5a7d6a;
+      --border: rgba(0, 230, 118, 0.22);
+      --glow: rgba(0, 230, 118, 0.15);
+      --err: #ff6b6b;
+      --font: "JetBrains Mono", "SF Mono", "Consolas", monospace;
+      --max: 720px;
+    }
+
+    html.theme-amber {
+      --green: #c8ff00;
+      --green-dim: rgba(200, 255, 0, 0.5);
+      --cyan: #ffcc00;
+      --text: #eeffcc;
+      --muted: #7a8f5a;
+      --border: rgba(200, 255, 0, 0.28);
+      --glow: rgba(255, 200, 0, 0.12);
+    }
+
+    html.theme-cyan {
+      --green: #00ffc8;
+      --green-dim: rgba(0, 255, 200, 0.55);
+      --cyan: #80c0ff;
+      --text: #c8fff4;
+      --muted: #4a9d8c;
+      --border: rgba(0, 255, 200, 0.25);
+      --glow: rgba(0, 255, 200, 0.12);
     }
 
     *,
@@ -35,38 +56,56 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: var(--font-sans);
-      font-size: 15px;
-      line-height: 1.6;
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.65;
       color: var(--text);
       background: var(--bg);
       -webkit-font-smoothing: antialiased;
+      transition: color 0.25s ease, background 0.25s ease;
     }
 
     a {
-      color: inherit;
+      color: var(--cyan);
       text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s, color 0.15s;
     }
 
-    .noise {
-      pointer-events: none;
+    a:hover {
+      color: var(--green);
+      border-bottom-color: var(--green);
+    }
+
+    .crt {
       position: fixed;
       inset: 0;
-      opacity: 0.035;
+      pointer-events: none;
       z-index: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-image:
+        linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.12) 50%),
+        linear-gradient(90deg, transparent 0%, rgba(0, 230, 118, 0.03) 50%, transparent 100%);
+      background-size: 100% 3px, 24px 24px;
     }
 
-    .glow {
-      position: fixed;
-      top: -20%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(90vw, 720px);
-      height: min(45vh, 420px);
-      background: radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 65%);
-      z-index: 0;
-      filter: blur(60px);
+    html.theme-amber .crt {
+      background-image:
+        linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.12) 50%),
+        linear-gradient(90deg, transparent 0%, rgba(200, 255, 0, 0.03) 50%, transparent 100%);
+    }
+
+    html.theme-cyan .crt {
+      background-image:
+        linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.12) 50%),
+        linear-gradient(90deg, transparent 0%, rgba(0, 255, 200, 0.03) 50%, transparent 100%);
+    }
+
+    .crt::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--glow), transparent 55%);
+      opacity: 0.9;
     }
 
     .wrap {
@@ -74,71 +113,95 @@
       z-index: 1;
       max-width: var(--max);
       margin-inline: auto;
-      padding: 28px clamp(20px, 5vw, 40px) 56px;
+      padding: 24px clamp(16px, 4vw, 28px) 32px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+    }
+
+    .topline {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-user {
+      color: var(--cyan);
+    }
+
+    .prompt-path {
+      color: var(--green);
+    }
+
+    .prompt-branch {
+      color: var(--muted);
     }
 
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
-      padding-bottom: 40px;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 20px;
     }
 
     .mark {
-      display: flex;
-      align-items: center;
-      gap: 12px;
       font-weight: 600;
-      letter-spacing: -0.02em;
-      font-size: 1rem;
+      color: var(--green);
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
     }
 
-    .mark span {
-      display: inline-flex;
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), #e8ff7a);
-      align-items: center;
-      justify-content: center;
-      color: var(--bg);
-      font-family: var(--font-display);
-      font-size: 1.1rem;
+    .mark::before {
+      content: "[";
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .mark::after {
+      content: "]";
+      color: var(--muted);
+      font-weight: 400;
     }
 
     nav {
       display: flex;
-      gap: 8px;
-      align-items: center;
+      gap: 4px;
       flex-wrap: wrap;
-      justify-content: flex-end;
+      font-size: 12px;
     }
 
     nav a {
-      padding: 8px 14px;
-      border-radius: 999px;
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: color 0.2s, background 0.2s;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      background: rgba(0, 230, 118, 0.04);
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
     }
 
     nav a:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(0, 230, 118, 0.1);
+      border-color: var(--green);
+      color: var(--green);
     }
 
     nav a.nav-cta {
-      background: var(--text);
+      background: var(--green);
       color: var(--bg);
+      font-weight: 600;
+      border-color: var(--green);
     }
 
     nav a.nav-cta:hover {
-      opacity: 0.92;
+      color: var(--bg);
+      filter: brightness(1.08);
     }
 
     main {
@@ -146,111 +209,613 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding-block: clamp(24px, 8vh, 80px);
+      padding-block: clamp(28px, 8vh, 64px);
     }
 
-    .hero .status + h1 {
-      margin-top: 28px;
+    .terminal {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow:
+        0 0 0 1px rgba(0, 230, 118, 0.06),
+        0 12px 48px rgba(0, 0, 0, 0.5);
+      transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      opacity: 0.75;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .dot:hover {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+
+    .dot-r {
+      background: #ff5f56;
+    }
+
+    .dot-y {
+      background: #ffbd2e;
+    }
+
+    .dot-g {
+      background: #27c93f;
+    }
+
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .terminal-title:focus {
+      outline: 1px solid var(--border);
+      outline-offset: 2px;
+    }
+
+    .terminal-body {
+      padding: 20px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .cmd {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .cmd .sigil {
+      color: var(--green);
+      margin-right: 8px;
     }
 
     .hero h1 {
-      font-family: var(--font-display);
+      font-size: clamp(1.15rem, 3.8vw, 1.45rem);
       font-weight: 600;
-      font-size: clamp(2.25rem, 6vw, 3.5rem);
-      line-height: 1.08;
-      letter-spacing: -0.03em;
+      line-height: 1.45;
       margin: 0 0 16px;
-      max-width: 12ch;
+      color: var(--text);
+      text-shadow: 0 0 20px rgba(0, 230, 118, 0.25);
     }
 
-    .hero h1 em {
-      font-style: italic;
-      font-weight: 500;
-      color: var(--accent);
+    .hero h1 .hl {
+      color: var(--green);
     }
 
     .hero-lede {
-      margin: 0 0 28px;
-      font-size: 1rem;
-      color: var(--text-muted);
-      max-width: 36ch;
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+      max-width: 52ch;
     }
 
-    .status {
-      display: inline-flex;
+    .hero-lede::before {
+      content: "# ";
+      color: var(--green-dim);
+    }
+
+    .out-block {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .out-block kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      font-family: inherit;
+      font-size: 11px;
+      color: var(--cyan);
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .terminal-log {
+      margin-top: 16px;
+      max-height: min(220px, 38vh);
+      overflow-y: auto;
+      padding-right: 6px;
+      font-size: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .terminal-log:empty {
+      display: none;
+    }
+
+    .term-line {
+      margin-bottom: 10px;
+      line-height: 1.55;
+    }
+
+    .term-line.term-cmd {
+      color: var(--muted);
+    }
+
+    .term-line.term-cmd .sigil {
+      color: var(--green);
+      margin-right: 8px;
+    }
+
+    .term-line.term-out {
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .term-line.term-out.muted {
+      color: var(--muted);
+    }
+
+    .term-line.term-out.err {
+      color: var(--err);
+    }
+
+    .term-line.term-out .accent {
+      color: var(--green);
+    }
+
+    .term-form {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .term-input-line {
+      display: flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.8125rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border);
-      width: fit-content;
+      width: 100%;
     }
 
-    .status::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
+    .term-input-line .sigil {
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    #term-input {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 10px;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--border);
+      border-radius: 0;
+    }
+
+    #term-input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 1px rgba(0, 230, 118, 0.2);
+    }
+
+    .term-hint {
+      margin: 10px 0 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .term-hint kbd {
+      font-family: inherit;
+      font-size: 10px;
+      padding: 1px 5px;
+      border: 1px solid var(--border);
+      color: var(--cyan);
     }
 
     footer {
       margin-top: auto;
-      padding-top: 32px;
+      padding-top: 24px;
       border-top: 1px solid var(--border);
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
+      align-items: baseline;
       gap: 12px;
-      font-size: 0.8125rem;
-      color: var(--text-muted);
+      font-size: 11px;
+      color: var(--muted);
     }
 
-    footer .links {
-      display: flex;
-      gap: 20px;
-    }
-
-    footer a:hover {
-      color: var(--text);
+    footer .hex {
+      color: var(--green-dim);
+      letter-spacing: 0.06em;
     }
   </style>
 </head>
 <body>
-  <div class="noise" aria-hidden="true"></div>
-  <div class="glow" aria-hidden="true"></div>
+  <div class="crt" aria-hidden="true"></div>
 
   <div class="wrap">
+    <div class="topline" aria-hidden="true">
+      <span class="prompt-user">root@easyroc</span>
+      <span class="prompt-path">~/public_html</span>
+      <span class="prompt-branch">main*</span>
+    </div>
+
     <header>
-      <a href="/" class="mark" aria-label="首页">
-        <span>e</span>
-        Easyroc
-      </a>
+      <a href="/" class="mark">easyroc</a>
       <nav aria-label="主导航">
-        <a href="mailto:hello@example.com">联系</a>
-        <a href="/feed.xml" class="nav-cta">RSS</a>
+        <a href="mailto:hello@example.com">mail</a>
+        <a href="/feed.xml" class="nav-cta">rss.xml</a>
       </nav>
     </header>
 
     <main>
-      <section class="hero" aria-labelledby="hero-title">
-        <p class="status" role="status">内容与归档筹备中</p>
-        <h1 id="hero-title">把复杂的事，<em>写简单</em>。</h1>
-        <p class="hero-lede">个人博客，上线后这里会列出文章。现在先留一页干净的门面。</p>
+      <section class="terminal hero" aria-labelledby="hero-title">
+        <div class="terminal-bar">
+          <button type="button" class="dot dot-r" title="清空输出" aria-label="清空终端输出"></button>
+          <button type="button" class="dot dot-y" title="随机一句" aria-label="随机语录"></button>
+          <button type="button" class="dot dot-g" title="聚焦输入框" aria-label="聚焦命令输入"></button>
+          <button type="button" class="terminal-title" id="term-focus-btn" title="点击聚焦命令行">
+            session · tty1
+          </button>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-intro">
+            <p class="cmd">
+              <span class="sigil">$</span>cat README.md
+            </p>
+            <h1 id="hero-title">
+              <span class="hl">//</span> 把复杂的事，<span class="hl">写简单</span>。
+            </h1>
+            <p class="hero-lede">站点静态构建中，文章索引尚未挂载。下方命令行可随便玩玩。</p>
+            <div class="out-block">
+              <span class="hex">STATUS</span>
+              interactive · v0.2.0
+              · <kbd>GET</kbd> / 200 OK
+            </div>
+          </div>
+
+          <div id="terminal-log" class="terminal-log" aria-live="polite" aria-relevant="additions"></div>
+
+          <form class="term-form" id="term-form" autocomplete="off">
+            <label class="term-input-line">
+              <span class="sigil" aria-hidden="true">$</span>
+              <input
+                type="text"
+                id="term-input"
+                name="cmd"
+                placeholder="输入命令后按 Enter"
+                spellcheck="false"
+                autocapitalize="off"
+                enterkeyhint="go"
+                aria-label="终端命令"
+              />
+            </label>
+            <p class="term-hint">
+              入门：<kbd>help</kbd>
+              · 主题 <kbd>theme</kbd>
+              · 清屏 <kbd>clear</kbd> 或 <kbd>Ctrl+L</kbd>
+              · 补全 <kbd>Tab</kbd>
+            </p>
+          </form>
+        </div>
       </section>
     </main>
 
     <footer>
-      <p>© 2026 Easyroc</p>
-      <div class="links">
-        <a href="https://github.com">GitHub</a>
-      </div>
+      <p>© 2026 easyroc · <span class="hex">MIT</span>-ish vibe</p>
+      <a href="https://github.com">github.com</a>
     </footer>
   </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById("term-form");
+      const input = document.getElementById("term-input");
+      const log = document.getElementById("terminal-log");
+      const html = document.documentElement;
+
+      const themes = ["", "theme-amber", "theme-cyan"];
+      const themeNames = ["phosphor", "amber", "cyan"];
+      let themeIndex = 0;
+
+      const fortunes = [
+        "先把首页跑起来，文章会自己长出来。",
+        "RSS 是对读者最友好的订阅方式之一。",
+        "静态站点 + Git，部署像推代码一样简单。",
+        "写博客是为了未来的自己查笔记。",
+        "少即是多；终端亦是。",
+      ];
+
+      const cmds = ["help", "clear", "ls", "cat", "date", "whoami", "neofetch", "fortune", "theme", "ping", "open", "sudo", "42", "hint"];
+
+      let history = [];
+      /** @type {-1 | number} 浏览历史时的下标；-1 表示未浏览 */
+      let histNav = -1;
+
+      function appendLine(htmlStr, className) {
+        const div = document.createElement("div");
+        div.className = "term-line " + (className || "");
+        div.innerHTML = htmlStr;
+        log.appendChild(div);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      function appendCmd(line) {
+        appendLine(
+          '<span class="sigil" aria-hidden="true">$</span>' + escapeHtml(line),
+          "term-cmd"
+        );
+      }
+
+      function appendOut(text, className) {
+        appendLine(escapeHtml(text).replace(/\n/g, "<br>"), "term-out " + (className || ""));
+      }
+
+      function appendOutHtml(html, className) {
+        appendLine(html.replace(/\n/g, "<br>"), "term-out " + (className || ""));
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function clearLog() {
+        log.innerHTML = "";
+      }
+
+      function printHelp() {
+        appendOut(
+          [
+            "可用命令：",
+            "  help / hint     本帮助",
+            "  ls              列出目录",
+            "  cat <file>      查看文件（如 cat readme）",
+            "  date            当前时间",
+            "  whoami          当前用户",
+            "  neofetch        系统信息（伪）",
+            "  fortune         随机一句话",
+            "  theme           切换配色主题",
+            "  ping            回声测试",
+            "  open rss|mail   打开订阅或邮件",
+            "  clear           清空输出区（↑ 介绍内容保留）",
+            "  sudo …          ?",
+            "",
+            "快捷键：↑↓ 历史  ·  Tab 补全  ·  Ctrl+L 清屏",
+          ].join("\n"),
+          "muted"
+        );
+      }
+
+      function runCommand(raw) {
+        const line = raw.trim();
+        if (!line) return;
+
+        if (history[history.length - 1] !== line) history.push(line);
+        if (history.length > 50) history.shift();
+        histNav = -1;
+
+        appendCmd(line);
+
+        const lower = line.toLowerCase();
+        const parts = line.split(/\s+/);
+        const cmd = parts[0].toLowerCase();
+        const arg = parts.slice(1).join(" ").trim();
+
+        if (cmd === "help") {
+          printHelp();
+          return;
+        }
+
+        if (cmd === "hint") {
+          printHelp();
+          return;
+        }
+
+        if (cmd === "clear") {
+          clearLog();
+          return;
+        }
+
+        if (cmd === "ls") {
+          appendOutHtml(
+            [
+              "total 4",
+              "drwxr-xr-x  ./",
+              "drwxr-xr-x  ../",
+              "-rw-r--r--  README.md",
+              "drwxr-xr--  posts/   <span class='accent'>(empty)</span>",
+              "-rw-r--r--  rss.xml  <span class='accent'>(soon)</span>",
+            ].join("\n")
+          );
+          return;
+        }
+
+        if (cmd === "cat") {
+          const f = arg.toLowerCase();
+          if (!f || f === "readme" || f === "readme.md") {
+            appendOut(
+              "// 把复杂的事，写简单。\n# 个人博客。文章上线后会出现在 posts/。",
+              "muted"
+            );
+            return;
+          }
+          if (f === "secret" || f === ".env") {
+            appendOut("Nice try. Nothing here yet.");
+            return;
+          }
+          appendOut("cat: " + (arg || "file") + ": 文件不存在", "err");
+          return;
+        }
+
+        if (cmd === "date") {
+          appendOut(new Date().toLocaleString("zh-CN", { hour12: false }), "muted");
+          return;
+        }
+
+        if (cmd === "whoami") {
+          appendOut("guest@easyroc · 只读访客 · shell zsh (simulated)");
+          return;
+        }
+
+        if (cmd === "neofetch") {
+          appendOutHtml(
+            [
+              "     ___     " + "root@easyroc",
+              " ___╱   ╲___  " + "—".repeat(18),
+              "╱           ╲ " + "<span class='accent'>OS</span>     static html",
+              "╲___________╱ " + "<span class='accent'>Host</span>   easyroc.local",
+              "              " + "<span class='accent'>Kernel</span> curiosity 6.x",
+              "    easyroc   " + "<span class='accent'>Shell</span>  web-console",
+              "              " + "<span class='accent'>Uptime</span> since you loaded",
+            ].join("\n")
+          );
+          return;
+        }
+
+        if (cmd === "fortune") {
+          appendOut(fortunes[Math.floor(Math.random() * fortunes.length)], "muted");
+          return;
+        }
+
+        if (cmd === "theme") {
+          themeIndex = (themeIndex + 1) % themes.length;
+          html.className = themes[themeIndex];
+          appendOut("theme → " + themeNames[themeIndex] + "  （再输入 theme 可轮换）", "muted");
+          return;
+        }
+
+        if (cmd === "ping") {
+          appendOut("easyroc is alive · latency ~0 ms · packet coffee not included", "muted");
+          return;
+        }
+
+        if (cmd === "open") {
+          const a = arg.toLowerCase();
+          if (a === "rss" || a === "feed") {
+            window.open("/feed.xml", "_blank", "noopener,noreferrer");
+            appendOut("opened rss.xml in new tab", "muted");
+            return;
+          }
+          if (a === "mail" || a === "email") {
+            window.location.href = "mailto:hello@example.com";
+            appendOut("mailto triggered", "muted");
+            return;
+          }
+          appendOut("用法: open rss  |  open mail", "err");
+          return;
+        }
+
+        if (cmd === "sudo") {
+          appendOut(
+            lower.includes("make me a sandwich")
+              ? "okay… here is a virtual sandwich 🥪"
+              : "sudo: 本站为平权 shell，不执行特权命令（开玩笑的，只是静态页）",
+            lower.includes("sandwich") ? "muted" : "err"
+          );
+          return;
+        }
+
+        if (cmd === "42") {
+          appendOut("生命、宇宙以及一切的答案是 42。——但先把博客写完。", "muted");
+          return;
+        }
+
+        appendOut('command not found: ' + escapeHtml(parts[0]) + ' · 输入 help', "err");
+      }
+
+      function tabComplete() {
+        const v = input.value;
+        const m = v.match(/^(\S*)/);
+        const prefix = m ? m[1] : "";
+        const hit = cmds.filter((c) => c.startsWith(prefix.toLowerCase()));
+        if (hit.length === 1) {
+          input.value = hit[0] + (v.includes(" ") ? v.slice(prefix.length) : " ");
+          return;
+        }
+        if (hit.length > 1) {
+          appendOut(hit.join("  "), "muted");
+        }
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const v = input.value;
+        input.value = "";
+        runCommand(v);
+        input.focus();
+      });
+
+      input.addEventListener("input", function () {
+        histNav = -1;
+      });
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Tab") {
+          e.preventDefault();
+          tabComplete();
+          return;
+        }
+        if (e.key === "l" && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          clearLog();
+          return;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          if (history.length === 0) return;
+          if (histNav === -1) histNav = history.length - 1;
+          else if (histNav > 0) histNav -= 1;
+          input.value = history[histNav];
+          return;
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          if (histNav === -1) return;
+          if (histNav < history.length - 1) {
+            histNav += 1;
+            input.value = history[histNav];
+          } else {
+            histNav = -1;
+            input.value = "";
+          }
+        }
+      });
+
+      document.querySelector(".dot-r").addEventListener("click", clearLog);
+      document.querySelector(".dot-y").addEventListener("click", function () {
+        runCommand("fortune");
+      });
+      document.querySelector(".dot-g").addEventListener("click", function () {
+        input.focus();
+      });
+      document.getElementById("term-focus-btn").addEventListener("click", function () {
+        input.focus();
+      });
+
+      input.focus();
+    })();
+  </script>
 </body>
 </html>
