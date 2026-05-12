@@ -1,46 +1,45 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>easyroc · ~/blog</title>
+  <title>easyroc</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #08090a;
-      --panel: #0c0e12;
-      --green: #00e676;
-      --green-dim: rgba(0, 230, 118, 0.55);
-      --cyan: #00e5ff;
-      --text: #c8ffc8;
-      --muted: #5a7d6a;
-      --border: rgba(0, 230, 118, 0.22);
-      --glow: rgba(0, 230, 118, 0.15);
-      --err: #ff6b6b;
-      --font: "JetBrains Mono", "SF Mono", "Consolas", monospace;
-      --max: 720px;
+      --font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --radius-pill: 999px;
+      --radius-dock: 22px;
+      --radius-icon: 14px;
     }
 
-    html.theme-amber {
-      --green: #c8ff00;
-      --green-dim: rgba(200, 255, 0, 0.5);
-      --cyan: #ffcc00;
-      --text: #eeffcc;
-      --muted: #7a8f5a;
-      --border: rgba(200, 255, 0, 0.28);
-      --glow: rgba(255, 200, 0, 0.12);
+    /* 深色 = 沉浸式（壁纸 + 浅色字），浅色 = 高对比玻璃 + 深色字 */
+    [data-theme="dark"] {
+      --hero-text: rgba(255, 255, 255, 0.99);
+      --hero-muted: rgba(255, 255, 255, 0.76);
+      --hero-faint: rgba(255, 255, 255, 0.48);
+      --glass-bg: rgba(255, 255, 255, 0.11);
+      --glass-bg-dock: rgba(255, 255, 255, 0.14);
+      --glass-border: rgba(255, 255, 255, 0.09);
+      --glass-inner: rgba(255, 255, 255, 0.14);
+      --shadow-text: 0 2px 24px rgba(0, 0, 0, 0.55);
+      --input-placeholder: rgba(255, 255, 255, 0.42);
+      --glass-tint: rgba(8, 10, 18, 0.52);
     }
 
-    html.theme-cyan {
-      --green: #00ffc8;
-      --green-dim: rgba(0, 255, 200, 0.55);
-      --cyan: #80c0ff;
-      --text: #c8fff4;
-      --muted: #4a9d8c;
-      --border: rgba(0, 255, 200, 0.25);
-      --glow: rgba(0, 255, 200, 0.12);
+    [data-theme="light"] {
+      --hero-text: #1c1917;
+      --hero-muted: #57534e;
+      --hero-faint: #78716c;
+      --glass-bg: rgba(255, 255, 255, 0.55);
+      --glass-bg-dock: rgba(255, 255, 255, 0.62);
+      --glass-border: rgba(28, 25, 23, 0.1);
+      --glass-inner: rgba(255, 255, 255, 0.75);
+      --shadow-text: 0 1px 3px rgba(255, 255, 255, 0.8);
+      --input-placeholder: #a8a29e;
+      --glass-tint: rgba(252, 250, 248, 0.88);
     }
 
     *,
@@ -49,772 +48,896 @@
       box-sizing: border-box;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       margin: 0;
       min-height: 100vh;
       font-family: var(--font);
-      font-size: 14px;
-      line-height: 1.65;
-      color: var(--text);
-      background: var(--bg);
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--hero-text);
+      background: #0a0e18;
       -webkit-font-smoothing: antialiased;
-      transition: color 0.25s ease, background 0.25s ease;
+      transition: color 0.3s ease;
+    }
+
+    [data-theme="light"] body {
+      background: #dfe6f0;
     }
 
     a {
-      color: var(--cyan);
+      color: inherit;
       text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.15s, color 0.15s;
     }
 
-    a:hover {
-      color: var(--green);
-      border-bottom-color: var(--green);
-    }
-
-    .crt {
+    .bg-stack {
       position: fixed;
       inset: 0;
-      pointer-events: none;
       z-index: 0;
-      background-image:
-        linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.12) 50%),
-        linear-gradient(90deg, transparent 0%, rgba(0, 230, 118, 0.03) 50%, transparent 100%);
-      background-size: 100% 3px, 24px 24px;
+      overflow: hidden;
+      pointer-events: none;
     }
 
-    html.theme-amber .crt {
-      background-image:
-        linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.12) 50%),
-        linear-gradient(90deg, transparent 0%, rgba(200, 255, 0, 0.03) 50%, transparent 100%);
-    }
-
-    html.theme-cyan .crt {
-      background-image:
-        linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.12) 50%),
-        linear-gradient(90deg, transparent 0%, rgba(0, 255, 200, 0.03) 50%, transparent 100%);
-    }
-
-    .crt::after {
-      content: "";
+    /* 底层：不依赖照片的设计感渐变（海岸线暮色氛围） */
+    .bg-atmosphere {
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--glow), transparent 55%);
-      opacity: 0.9;
+      background:
+        radial-gradient(ellipse 120% 80% at 70% 10%, rgba(255, 180, 120, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 90% 60% at 20% 90%, rgba(30, 58, 95, 0.85) 0%, transparent 50%),
+        linear-gradient(165deg, #0d1525 0%, #1a2744 35%, #2d1f3a 70%, #1a1020 100%);
+      transition: opacity 0.8s ease;
     }
 
-    .wrap {
-      position: relative;
+    [data-theme="light"] .bg-atmosphere {
+      background:
+        radial-gradient(ellipse 100% 70% at 60% 0%, rgba(255, 220, 190, 0.5) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 50% at 0% 100%, rgba(120, 150, 200, 0.35) 0%, transparent 45%),
+        linear-gradient(175deg, #e8ecf5 0%, #d4dce8 45%, #c9d4e5 100%);
+    }
+
+    /* 照片仅作环境光层：降强度 + 混合，避免「壁纸网站」廉价感 */
+    .bg-stack.no-photo .bg-pane {
+      opacity: 0 !important;
+      visibility: hidden;
+    }
+
+    /* 照片层：尽量还原清晰度，少叠混合与压暗（可读性交给轻量 vignette） */
+    .bg-pane {
+      position: absolute;
+      inset: 0;
       z-index: 1;
-      max-width: var(--max);
-      margin-inline: auto;
-      padding: 24px clamp(16px, 4vw, 28px) 32px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transition: opacity 1.1s ease;
+      transform: scale(1.02);
+      filter: saturate(1.06) brightness(1) contrast(1.03);
+      mix-blend-mode: normal;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg-pane {
+        transition: opacity 0.01ms;
+        transform: none;
+      }
+    }
+
+    .bg-pane.is-visible {
+      opacity: 0.88;
+    }
+
+    [data-theme="light"] .bg-pane.is-visible {
+      opacity: 0.78;
+      mix-blend-mode: normal;
+      filter: saturate(1.02) brightness(1.02) contrast(1.02);
+    }
+
+    /* 轻量压角，避免再盖一层「糊墙」 */
+    .bg-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        radial-gradient(ellipse 92% 72% at 50% 42%, transparent 0%, rgba(5, 8, 16, 0.28) 100%),
+        linear-gradient(to top, rgba(5, 9, 18, 0.45) 0%, rgba(5, 9, 18, 0.08) 45%, transparent 68%);
+      pointer-events: none;
+    }
+
+    [data-theme="light"] .bg-scrim {
+      background:
+        radial-gradient(ellipse 95% 75% at 50% 45%, rgba(255, 255, 255, 0.08) 0%, rgba(245, 248, 252, 0.38) 100%),
+        linear-gradient(to top, rgba(255, 255, 255, 0.28) 0%, transparent 58%);
+    }
+
+    .bg-grain {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      opacity: 0.028;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    [data-theme="light"] .bg-grain {
+      opacity: 0.02;
+    }
+
+    .glass-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.45s ease;
+      background: var(--glass-tint);
+      -webkit-backdrop-filter: blur(28px) saturate(1.4);
+      backdrop-filter: blur(28px) saturate(1.4);
+    }
+
+    @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+      .glass-overlay {
+        opacity: 0;
+      }
+    }
+
+    body.glass-active .glass-overlay {
+      opacity: 1;
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      padding: clamp(16px, 3vw, 28px) clamp(16px, 4vw, 36px) clamp(20px, 3vh, 32px);
     }
 
-    .topline {
+    /* —— 顶栏 —— */
+    .top-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 10px;
-      padding-bottom: 20px;
-      font-size: 12px;
-      color: var(--muted);
-      border-bottom: 1px solid var(--border);
-      letter-spacing: 0.02em;
-    }
-
-    .prompt-user {
-      color: var(--cyan);
-    }
-
-    .prompt-path {
-      color: var(--green);
-    }
-
-    .prompt-branch {
-      color: var(--muted);
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .mark {
-      font-weight: 600;
-      color: var(--green);
-      letter-spacing: 0.08em;
-      text-transform: lowercase;
-    }
-
-    .mark::before {
-      content: "[";
-      color: var(--muted);
-      font-weight: 400;
-    }
-
-    .mark::after {
-      content: "]";
-      color: var(--muted);
-      font-weight: 400;
-    }
-
-    nav {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      font-size: 12px;
-    }
-
-    nav a {
-      padding: 6px 10px;
-      border: 1px solid var(--border);
-      background: rgba(0, 230, 118, 0.04);
-      color: var(--text);
-      border-bottom: 1px solid var(--border);
-    }
-
-    nav a:hover {
-      background: rgba(0, 230, 118, 0.1);
-      border-color: var(--green);
-      color: var(--green);
-    }
-
-    nav a.nav-cta {
-      background: var(--green);
-      color: var(--bg);
-      font-weight: 600;
-      border-color: var(--green);
-    }
-
-    nav a.nav-cta:hover {
-      color: var(--bg);
-      filter: brightness(1.08);
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding-block: clamp(28px, 8vh, 64px);
-    }
-
-    .terminal {
-      border: 1px solid var(--border);
-      background: var(--panel);
-      box-shadow:
-        0 0 0 1px rgba(0, 230, 118, 0.06),
-        0 12px 48px rgba(0, 0, 0, 0.5);
-      transition: box-shadow 0.25s ease, border-color 0.25s ease;
-    }
-
-    .terminal-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--muted);
-      background: rgba(0, 0, 0, 0.35);
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      opacity: 0.75;
-      cursor: pointer;
-      transition: transform 0.12s ease, opacity 0.12s ease;
-    }
-
-    .dot:hover {
-      opacity: 1;
-      transform: scale(1.15);
-    }
-
-    .dot-r {
-      background: #ff5f56;
-    }
-
-    .dot-y {
-      background: #ffbd2e;
-    }
-
-    .dot-g {
-      background: #27c93f;
-    }
-
-    .terminal-title {
-      flex: 1;
-      text-align: center;
-      color: var(--muted);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .terminal-title:focus {
-      outline: 1px solid var(--border);
-      outline-offset: 2px;
-    }
-
-    .terminal-body {
-      padding: 20px 20px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .cmd {
-      margin: 0 0 8px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .cmd .sigil {
-      color: var(--green);
-      margin-right: 8px;
-    }
-
-    .hero h1 {
-      font-size: clamp(1.15rem, 3.8vw, 1.45rem);
-      font-weight: 600;
-      line-height: 1.45;
-      margin: 0 0 16px;
-      color: var(--text);
-      text-shadow: 0 0 20px rgba(0, 230, 118, 0.25);
-    }
-
-    .hero h1 .hl {
-      color: var(--green);
-    }
-
-    .hero-lede {
-      margin: 0;
-      font-size: 13px;
-      color: var(--muted);
-      max-width: 52ch;
-    }
-
-    .hero-lede::before {
-      content: "# ";
-      color: var(--green-dim);
-    }
-
-    .out-block {
-      margin-top: 18px;
-      padding-top: 14px;
-      border-top: 1px dashed var(--border);
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .out-block kbd {
-      display: inline-block;
-      padding: 2px 6px;
-      font-family: inherit;
-      font-size: 11px;
-      color: var(--cyan);
-      border: 1px solid var(--border);
-      background: rgba(0, 0, 0, 0.35);
-    }
-
-    .terminal-log {
-      margin-top: 16px;
-      max-height: min(220px, 38vh);
-      overflow-y: auto;
-      padding-right: 6px;
-      font-size: 12px;
-      scroll-behavior: smooth;
-    }
-
-    .terminal-log:empty {
-      display: none;
-    }
-
-    .term-line {
-      margin-bottom: 10px;
-      line-height: 1.55;
-    }
-
-    .term-line.term-cmd {
-      color: var(--muted);
-    }
-
-    .term-line.term-cmd .sigil {
-      color: var(--green);
-      margin-right: 8px;
-    }
-
-    .term-line.term-out {
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .term-line.term-out.muted {
-      color: var(--muted);
-    }
-
-    .term-line.term-out.err {
-      color: var(--err);
-    }
-
-    .term-line.term-out .accent {
-      color: var(--green);
-    }
-
-    .term-form {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
-    }
-
-    .term-input-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-    }
-
-    .term-input-line .sigil {
-      color: var(--green);
+      gap: 12px 24px;
       flex-shrink: 0;
     }
 
-    #term-input {
-      flex: 1;
-      min-width: 0;
-      padding: 8px 10px;
-      font-family: inherit;
-      font-size: 13px;
-      color: var(--text);
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid var(--border);
-      border-radius: 0;
-    }
-
-    #term-input:focus {
-      outline: none;
-      border-color: var(--green);
-      box-shadow: 0 0 0 1px rgba(0, 230, 118, 0.2);
-    }
-
-    .term-hint {
-      margin: 10px 0 0;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .term-hint kbd {
-      font-family: inherit;
-      font-size: 10px;
-      padding: 1px 5px;
-      border: 1px solid var(--border);
-      color: var(--cyan);
-    }
-
-    footer {
-      margin-top: auto;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
+    .brand-row {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 12px;
-      font-size: 11px;
-      color: var(--muted);
+      align-items: center;
+      gap: 10px 20px;
     }
 
-    footer .hex {
-      color: var(--green-dim);
-      letter-spacing: 0.06em;
+    .brand {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-shadow: var(--shadow-text);
+    }
+
+    .nav-pill {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .nav-pill a {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--hero-muted);
+      border-radius: var(--radius-pill);
+      text-shadow: var(--shadow-text);
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-pill a:hover {
+      color: var(--hero-text);
+      background: var(--glass-inner);
+    }
+
+    /* —— 中间主区 —— */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 0 32px;
+      text-align: center;
+    }
+
+    .tagline {
+      margin: 0 0 28px;
+      font-size: clamp(1.15rem, 3vw, 1.45rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--hero-text);
+      text-shadow: var(--shadow-text);
+      max-width: 22ch;
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      -webkit-backdrop-filter: blur(18px) saturate(1.65);
+      backdrop-filter: blur(18px) saturate(1.65);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.035) inset,
+        0 20px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    [data-theme="light"] .glass-panel {
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.28) inset,
+        0 12px 40px rgba(30, 40, 60, 0.08);
+    }
+
+    .omnibar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      width: min(100%, 560px);
+      padding: 6px 10px 6px 8px;
+      border-radius: var(--radius-pill);
+    }
+
+    .ico-search-btn {
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      color: var(--hero-muted);
+      cursor: pointer;
+      border-radius: 12px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .ico-search-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--hero-text);
+    }
+
+    [data-theme="light"] .ico-search-btn:hover {
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    .ico-search-btn .ico-search-svg {
+      display: block;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      opacity: 0.9;
+    }
+
+    .omnibar .omni-input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px 8px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--hero-text);
+      background: transparent;
+      border: none;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .omnibar .omni-input::-webkit-search-decoration,
+    .omnibar .omni-input::-webkit-search-cancel-button,
+    .omnibar .omni-input::-webkit-search-results-button,
+    .omnibar .omni-input::-webkit-search-results-decoration {
+      display: none;
+    }
+
+    .omnibar .omni-input::-ms-clear {
+      display: none;
+    }
+
+    .omnibar .omni-input::placeholder {
+      color: var(--input-placeholder);
+    }
+
+    .dock-wrap {
+      margin-top: clamp(96px, 14vh, 142px);
+      width: fit-content;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 8px 10px;
+      border-radius: 22px;
+      background: var(--glass-bg-dock);
+      border: 1px solid var(--glass-border);
+      -webkit-backdrop-filter: blur(24px) saturate(1.7);
+      backdrop-filter: blur(24px) saturate(1.7);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.03) inset,
+        0 24px 60px rgba(0, 0, 0, 0.18);
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    .dock-wrap::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .dock-wrap::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+    }
+
+    .dock-grid {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 6px;
+      width: max-content;
+      max-width: none;
+      margin-inline: auto;
+      padding: 0 0 2px;
+    }
+
+    .dock-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      flex: 0 0 auto;
+      width: 70px;
+      padding: 4px 2px;
+      border-radius: 14px;
+      color: var(--hero-text);
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .dock-item:hover {
+      background: var(--glass-inner);
+      transform: translateY(-2px) scale(1.03);
+    }
+
+    /* 与 portal2 一致：图标直接 img，固定尺寸 + 圆角，避免额外容器缩放发糊 */
+    .dock-item > img {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .dock-item .label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--hero-muted);
+      text-align: center;
+      line-height: 1.2;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* —— 底栏 —— */
+    .bottom-bar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: end;
+      gap: 16px;
+      flex-shrink: 0;
+      padding-top: 16px;
+    }
+
+    @media (max-width: 720px) {
+      .bottom-bar {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .bottom-bar .weather {
+        order: 1;
+        text-align: center;
+      }
+
+      .bottom-bar .quote-block {
+        order: 2;
+        text-align: center;
+      }
+
+      .bottom-bar .clock-block {
+        order: 3;
+        justify-self: center;
+        text-align: center;
+      }
+    }
+
+    .weather {
+      font-size: 13px;
+      color: var(--hero-muted);
+      text-shadow: var(--shadow-text);
+    }
+
+    .weather strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--hero-text);
+      letter-spacing: -0.02em;
+    }
+
+    .quote-block {
+      margin: 0;
+      max-width: 42ch;
+      justify-self: center;
+      text-align: center;
+    }
+
+    .quote-block p {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 500;
+      font-style: italic;
+      color: var(--hero-muted);
+      line-height: 1.5;
+      text-shadow: var(--shadow-text);
+    }
+
+    .quote-block cite {
+      display: block;
+      margin-top: 6px;
+      font-size: 11px;
+      font-style: normal;
+      color: var(--hero-faint);
+    }
+
+    .clock-block {
+      justify-self: end;
+      text-align: right;
+      text-shadow: var(--shadow-text);
+    }
+
+    .clock-24 {
+      font-size: clamp(1.45rem, 3.8vw, 1.95rem);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+      color: var(--hero-text);
+      line-height: 1.15;
+    }
+
+    .clock-weekday {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--hero-muted);
+      margin-top: 6px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <div class="crt" aria-hidden="true"></div>
+  <div class="bg-stack" id="bg-stack" aria-hidden="true">
+    <div class="bg-atmosphere"></div>
+    <div class="bg-pane" id="bg-pane-a"></div>
+    <div class="bg-pane" id="bg-pane-b"></div>
+    <div class="bg-scrim"></div>
+    <div class="bg-grain" aria-hidden="true"></div>
+  </div>
+  <div class="glass-overlay" id="glass-overlay" aria-hidden="true"></div>
 
-  <div class="wrap">
-    <div class="topline" aria-hidden="true">
-      <span class="prompt-user">root@easyroc</span>
-      <span class="prompt-path">~/public_html</span>
-      <span class="prompt-branch">main*</span>
-    </div>
-
-    <header>
-      <a href="/" class="mark">easyroc</a>
-      <nav aria-label="主导航">
-        <a href="mailto:hello@example.com">mail</a>
-        <a href="/feed.xml" class="nav-cta">rss.xml</a>
-      </nav>
+  <div class="page">
+    <header class="top-bar">
+      <div class="brand-row">
+        <nav class="nav-pill" aria-label="快捷分区">
+          <a href="blog.html">博客</a>
+        </nav>
+      </div>
     </header>
 
-    <main>
-      <section class="terminal hero" aria-labelledby="hero-title">
-        <div class="terminal-bar">
-          <button type="button" class="dot dot-r" title="清空输出" aria-label="清空终端输出"></button>
-          <button type="button" class="dot dot-y" title="随机一句" aria-label="随机语录"></button>
-          <button type="button" class="dot dot-g" title="聚焦输入框" aria-label="聚焦命令输入"></button>
-          <button type="button" class="terminal-title" id="term-focus-btn" title="点击聚焦命令行">
-            session · tty1
-          </button>
-        </div>
-        <div class="terminal-body">
-          <div class="terminal-intro">
-            <p class="cmd">
-              <span class="sigil">$</span>cat README.md
-            </p>
-            <h1 id="hero-title">
-              <span class="hl">//</span> 把复杂的事，<span class="hl">写简单</span>。
-            </h1>
-            <p class="hero-lede">站点静态构建中，文章索引尚未挂载。下方命令行可随便玩玩。</p>
-            <div class="out-block">
-              <span class="hex">STATUS</span>
-              interactive · v0.2.0
-              · <kbd>GET</kbd> / 200 OK
-            </div>
-          </div>
+    <main class="hero" id="hero">
+      <p class="tagline" id="hero-tagline">专注当下，享受生活</p>
 
-          <div id="terminal-log" class="terminal-log" aria-live="polite" aria-relevant="additions"></div>
+      <form class="omnibar glass-panel" id="search-form" action="https://www.google.com/search" method="get" target="_blank" rel="noopener noreferrer">
+        <button type="button" class="ico-search-btn" id="engine-cycle" title="当前：Google，点击切换" aria-label="切换搜索引擎，当前为 Google">
+          <svg class="ico-search-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="10.5" cy="10.5" r="6.25" stroke="currentColor" stroke-width="1.65" />
+            <path d="M15.2 15.2 21 21" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" />
+          </svg>
+        </button>
+        <input
+          type="text"
+          id="q"
+          name="q"
+          class="omni-input"
+          role="searchbox"
+          aria-label="搜索或输入网址"
+          placeholder="此刻，你想了解什么？"
+          autocomplete="off"
+          enterkeyhint="search"
+          inputmode="search"
+        />
+      </form>
 
-          <form class="term-form" id="term-form" autocomplete="off">
-            <label class="term-input-line">
-              <span class="sigil" aria-hidden="true">$</span>
-              <input
-                type="text"
-                id="term-input"
-                name="cmd"
-                placeholder="输入命令后按 Enter"
-                spellcheck="false"
-                autocapitalize="off"
-                enterkeyhint="go"
-                aria-label="终端命令"
-              />
-            </label>
-            <p class="term-hint">
-              入门：<kbd>help</kbd>
-              · 主题 <kbd>theme</kbd>
-              · 清屏 <kbd>clear</kbd> 或 <kbd>Ctrl+L</kbd>
-              · 补全 <kbd>Tab</kbd>
-            </p>
-          </form>
-        </div>
-      </section>
+      <div class="dock-wrap" id="dock">
+        <nav class="dock-grid" aria-label="网站快捷方式">
+          <a class="dock-item" href="https://www.bilibili.com" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.google.com/s2/favicons?domain=www.bilibili.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <span class="label">哔哩哔哩</span>
+          </a>
+          <a class="dock-item" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.google.com/s2/favicons?domain=www.youtube.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <span class="label">YouTube</span>
+          </a>
+          <a class="dock-item" href="https://www.zhihu.com" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.google.com/s2/favicons?domain=www.zhihu.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <span class="label">知乎</span>
+          </a>
+          <a class="dock-item" href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">
+            <img src="https://t2.gstatic.com/faviconV2?client=SOCIAL&amp;type=FAVICON&amp;fallback_opts=TYPE,SIZE,URL&amp;url=https://chat.openai.com/&amp;size=128" alt="" loading="lazy" decoding="async" />
+            <span class="label">ChatGPT</span>
+          </a>
+          <a class="dock-item" href="https://chat.deepseek.com" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.google.com/s2/favicons?domain=chat.deepseek.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <span class="label">DeepSeek</span>
+          </a>
+          <a class="dock-item" href="https://outlook.live.com" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.google.com/s2/favicons?domain=outlook.live.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <span class="label">Outlook</span>
+          </a>
+          <a class="dock-item" href="https://github.com" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.google.com/s2/favicons?domain=github.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <span class="label">GitHub</span>
+          </a>
+        </nav>
+      </div>
     </main>
 
-    <footer>
-      <p>© 2026 easyroc · <span class="hex">MIT</span>-ish vibe</p>
-      <a href="https://github.com">github.com</a>
+    <footer class="bottom-bar">
+      <div class="weather" id="weather" aria-live="polite">
+        <strong id="weather-temp">--°</strong>
+        <span id="weather-desc">天气加载中…</span>
+      </div>
+      <blockquote class="quote-block">
+        <p>The best way to predict the future is to create it.</p>
+        <cite>— Peter Drucker</cite>
+      </blockquote>
+      <div class="clock-block" aria-live="polite">
+        <div class="clock-24" id="clock-24">--:--</div>
+        <div class="clock-weekday" id="clock-weekday">—</div>
+      </div>
     </footer>
   </div>
 
   <script>
     (function () {
-      const form = document.getElementById("term-form");
-      const input = document.getElementById("term-input");
-      const log = document.getElementById("terminal-log");
-      const html = document.documentElement;
+      var THEME_KEY = "easyroc-portal-theme";
+      var ROTATE_MS = 30 * 60 * 1000;
+      /** 与 png/wallpapers.json 同步；fetch 失败（如 file://）时仍可用本地 png 背景 */
+      var PORTAL_WALLPAPERS = ["sky.png", "sea.png"];
 
-      const themes = ["", "theme-amber", "theme-cyan"];
-      const themeNames = ["phosphor", "amber", "cyan"];
-      let themeIndex = 0;
+      var html = document.documentElement;
+      var body = document.body;
+      var searchInput = document.getElementById("q");
+      var glassOverlay = document.getElementById("glass-overlay");
+      var paneA = document.getElementById("bg-pane-a");
+      var paneB = document.getElementById("bg-pane-b");
+      var bgStack = document.getElementById("bg-stack");
+      var weatherTemp = document.getElementById("weather-temp");
+      var weatherDesc = document.getElementById("weather-desc");
+      var clock24El = document.getElementById("clock-24");
+      var clockWeekdayEl = document.getElementById("clock-weekday");
 
-      const fortunes = [
-        "先把首页跑起来，文章会自己长出来。",
-        "RSS 是对读者最友好的订阅方式之一。",
-        "静态站点 + Git，部署像推代码一样简单。",
-        "写博客是为了未来的自己查笔记。",
-        "少即是多；终端亦是。",
-      ];
-
-      const cmds = ["help", "clear", "ls", "cat", "date", "whoami", "neofetch", "fortune", "theme", "ping", "open", "sudo", "42", "hint"];
-
-      let history = [];
-      /** @type {-1 | number} 浏览历史时的下标；-1 表示未浏览 */
-      let histNav = -1;
-
-      function appendLine(htmlStr, className) {
-        const div = document.createElement("div");
-        div.className = "term-line " + (className || "");
-        div.innerHTML = htmlStr;
-        log.appendChild(div);
-        log.scrollTop = log.scrollHeight;
+      function applyTheme(theme) {
+        if (theme !== "light" && theme !== "dark") theme = "dark";
+        html.setAttribute("data-theme", theme);
+        try {
+          localStorage.setItem(THEME_KEY, theme);
+        } catch (e) {}
       }
 
-      function appendCmd(line) {
-        appendLine(
-          '<span class="sigil" aria-hidden="true">$</span>' + escapeHtml(line),
-          "term-cmd"
+      function initTheme() {
+        var stored = null;
+        try {
+          stored = localStorage.getItem(THEME_KEY);
+        } catch (e) {}
+        if (stored === "light" || stored === "dark") {
+          applyTheme(stored);
+          return;
+        }
+        applyTheme("dark");
+      }
+
+      initTheme();
+
+      function setGlass(on) {
+        body.classList.toggle("glass-active", on);
+        glassOverlay.setAttribute("aria-hidden", on ? "false" : "true");
+      }
+
+      searchInput.addEventListener("focus", function () {
+        setGlass(true);
+      });
+      searchInput.addEventListener("blur", function () {
+        setGlass(false);
+      });
+
+      function updateClock() {
+        var d = new Date();
+        clock24El.textContent = d.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false });
+        clockWeekdayEl.textContent = d.toLocaleDateString("zh-CN", { weekday: "long" });
+      }
+
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      function wmoDesc(code) {
+        if (code === 0) return "晴朗";
+        if (code === 1 || code === 2) return "少云";
+        if (code === 3) return "阴";
+        if (code >= 45 && code <= 48) return "雾";
+        if (code >= 51 && code <= 57) return "毛毛雨";
+        if (code >= 61 && code <= 67) return "雨";
+        if (code >= 71 && code <= 77) return "雪";
+        if (code >= 80 && code <= 82) return "阵雨";
+        if (code >= 95) return "雷暴";
+        return "多云";
+      }
+
+      function loadWeather(lat, lon) {
+        var url =
+          "https://api.open-meteo.com/v1/forecast?latitude=" +
+          lat +
+          "&longitude=" +
+          lon +
+          "&current_weather=true&timezone=auto";
+        fetch(url)
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            var cw = data.current_weather;
+            if (!cw) throw new Error("no data");
+            weatherTemp.textContent = Math.round(cw.temperature) + "°C";
+            weatherDesc.textContent = wmoDesc(cw.weathercode);
+          })
+          .catch(function () {
+            weatherTemp.textContent = "--°";
+            weatherDesc.textContent = "天气暂不可用";
+          });
+      }
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            loadWeather(pos.coords.latitude, pos.coords.longitude);
+          },
+          function () {
+            loadWeather(31.23, 121.47);
+          },
+          { timeout: 8000, maximumAge: 600000 }
         );
+      } else {
+        loadWeather(31.23, 121.47);
       }
 
-      function appendOut(text, className) {
-        appendLine(escapeHtml(text).replace(/\n/g, "<br>"), "term-out " + (className || ""));
+      function toAbsoluteUrl(url) {
+        try {
+          return new URL(url, document.baseURI).href;
+        } catch (e) {
+          return url;
+        }
       }
 
-      function appendOutHtml(html, className) {
-        appendLine(html.replace(/\n/g, "<br>"), "term-out " + (className || ""));
+      function loadImageUrl(url) {
+        return new Promise(function (resolve) {
+          var abs = toAbsoluteUrl(url);
+          var img = new Image();
+          img.onload = function () {
+            resolve(abs);
+          };
+          img.onerror = function () {
+            resolve(null);
+          };
+          img.src = abs;
+        });
       }
 
-      function escapeHtml(s) {
-        return String(s)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
+      function normalizeList(raw) {
+        if (!raw || !raw.length) return Promise.resolve([]);
+        var tasks = raw.map(function (item) {
+          var path = typeof item === "string" ? item.trim() : "";
+          if (!path) return Promise.resolve(null);
+          if (path.indexOf("/") === -1) path = "png/" + path;
+          return loadImageUrl(path);
+        });
+        return Promise.all(tasks).then(function (results) {
+          return results.filter(Boolean);
+        });
       }
 
-      function clearLog() {
-        log.innerHTML = "";
+      function probeNumbered(max) {
+        var urls = [];
+        for (var i = 1; i <= max; i++) urls.push("png/" + i + ".png");
+        return normalizeList(urls);
       }
 
-      function printHelp() {
-        appendOut(
-          [
-            "可用命令：",
-            "  help / hint     本帮助",
-            "  ls              列出目录",
-            "  cat <file>      查看文件（如 cat readme）",
-            "  date            当前时间",
-            "  whoami          当前用户",
-            "  neofetch        系统信息（伪）",
-            "  fortune         随机一句话",
-            "  theme           切换配色主题",
-            "  ping            回声测试",
-            "  open rss|mail   打开订阅或邮件",
-            "  clear           清空输出区（↑ 介绍内容保留）",
-            "  sudo …          ?",
-            "",
-            "快捷键：↑↓ 历史  ·  Tab 补全  ·  Ctrl+L 清屏",
-          ].join("\n"),
-          "muted"
+      function initWallpapers() {
+        return fetch("png/wallpapers.json")
+          .then(function (r) {
+            if (!r.ok) throw new Error("no json");
+            return r.json();
+          })
+          .then(function (data) {
+            if (!Array.isArray(data)) return [];
+            return normalizeList(data);
+          })
+          .catch(function () {
+            return [];
+          })
+          .then(function (jsonUrls) {
+            if (jsonUrls.length) return jsonUrls;
+            return normalizeList(PORTAL_WALLPAPERS).then(function (inlineUrls) {
+              if (inlineUrls.length) return inlineUrls;
+              return probeNumbered(12);
+            });
+          });
+      }
+
+      function setupRotator(urls) {
+        if (!urls.length) {
+          bgStack.classList.add("no-photo");
+          return;
+        }
+
+        bgStack.classList.remove("no-photo");
+        var frontEl = paneA;
+        var backEl = paneB;
+        var idx = 0;
+
+        function showAt(i) {
+          var u = urls[i % urls.length];
+          var loader = new Image();
+          loader.onload = function () {
+            backEl.style.backgroundImage = 'url("' + u.replace(/"/g, '\\"') + '")';
+            backEl.classList.add("is-visible");
+            frontEl.classList.remove("is-visible");
+            var tmp = frontEl;
+            frontEl = backEl;
+            backEl = tmp;
+          };
+          loader.onerror = function () {};
+          loader.src = u;
+        }
+
+        frontEl.style.backgroundImage = 'url("' + urls[0].replace(/"/g, '\\"') + '")';
+        frontEl.classList.add("is-visible");
+
+        if (urls.length === 1) return;
+
+        setInterval(function () {
+          idx = (idx + 1) % urls.length;
+          showAt(idx);
+        }, ROTATE_MS);
+      }
+
+      initWallpapers().then(setupRotator);
+
+      var form = document.getElementById("search-form");
+      var q = document.getElementById("q");
+      var engineCycleBtn = document.getElementById("engine-cycle");
+
+      var ENGINE_ORDER = ["google", "baidu", "bing"];
+      var ENGINE_LABELS = { google: "Google", baidu: "百度", bing: "必应" };
+      var engineIndex = 0;
+
+      var endpoints = {
+        google: { action: "https://www.google.com/search", param: "q" },
+        baidu: { action: "https://www.baidu.com/s", param: "wd" },
+        bing: { action: "https://www.bing.com/search", param: "q" },
+      };
+
+      function currentEngine() {
+        return ENGINE_ORDER[engineIndex];
+      }
+
+      var ENGINE_STORAGE_KEY = "easyroc-portal-engine-v2";
+
+      function syncForm() {
+        if (!form || !q) return;
+        var ep = endpoints[currentEngine()] || endpoints.google;
+        form.setAttribute("action", ep.action);
+        q.setAttribute("name", ep.param);
+      }
+
+      function updateEngineButton() {
+        if (!engineCycleBtn) return;
+        var label = ENGINE_LABELS[currentEngine()];
+        engineCycleBtn.setAttribute("title", "当前：" + label + "，点击切换");
+        engineCycleBtn.setAttribute("aria-label", "切换搜索引擎，当前为 " + label);
+      }
+
+      try {
+        var saved = sessionStorage.getItem(ENGINE_STORAGE_KEY);
+        if (saved != null) {
+          var n = parseInt(saved, 10);
+          if (n >= 0 && n < ENGINE_ORDER.length) engineIndex = n;
+        }
+      } catch (e) {}
+
+      function cycleEngine() {
+        engineIndex = (engineIndex + 1) % ENGINE_ORDER.length;
+        try {
+          sessionStorage.setItem(ENGINE_STORAGE_KEY, String(engineIndex));
+        } catch (err) {}
+        syncForm();
+        updateEngineButton();
+      }
+
+      if (form && engineCycleBtn) {
+        form.addEventListener(
+          "click",
+          function (e) {
+            if (!e.target || !e.target.closest || !e.target.closest("#engine-cycle")) return;
+            e.preventDefault();
+            e.stopPropagation();
+            cycleEngine();
+          },
+          true
         );
+
+        engineCycleBtn.addEventListener("keydown", function (e) {
+          if (e.key === " " || e.key === "Enter") {
+            e.preventDefault();
+            cycleEngine();
+          }
+        });
       }
 
-      function runCommand(raw) {
-        const line = raw.trim();
-        if (!line) return;
+      syncForm();
+      updateEngineButton();
 
-        if (history[history.length - 1] !== line) history.push(line);
-        if (history.length > 50) history.shift();
-        histNav = -1;
-
-        appendCmd(line);
-
-        const lower = line.toLowerCase();
-        const parts = line.split(/\s+/);
-        const cmd = parts[0].toLowerCase();
-        const arg = parts.slice(1).join(" ").trim();
-
-        if (cmd === "help") {
-          printHelp();
-          return;
-        }
-
-        if (cmd === "hint") {
-          printHelp();
-          return;
-        }
-
-        if (cmd === "clear") {
-          clearLog();
-          return;
-        }
-
-        if (cmd === "ls") {
-          appendOutHtml(
-            [
-              "total 4",
-              "drwxr-xr-x  ./",
-              "drwxr-xr-x  ../",
-              "-rw-r--r--  README.md",
-              "drwxr-xr--  posts/   <span class='accent'>(empty)</span>",
-              "-rw-r--r--  rss.xml  <span class='accent'>(soon)</span>",
-            ].join("\n")
-          );
-          return;
-        }
-
-        if (cmd === "cat") {
-          const f = arg.toLowerCase();
-          if (!f || f === "readme" || f === "readme.md") {
-            appendOut(
-              "// 把复杂的事，写简单。\n# 个人博客。文章上线后会出现在 posts/。",
-              "muted"
-            );
-            return;
-          }
-          if (f === "secret" || f === ".env") {
-            appendOut("Nice try. Nothing here yet.");
-            return;
-          }
-          appendOut("cat: " + (arg || "file") + ": 文件不存在", "err");
-          return;
-        }
-
-        if (cmd === "date") {
-          appendOut(new Date().toLocaleString("zh-CN", { hour12: false }), "muted");
-          return;
-        }
-
-        if (cmd === "whoami") {
-          appendOut("guest@easyroc · 只读访客 · shell zsh (simulated)");
-          return;
-        }
-
-        if (cmd === "neofetch") {
-          appendOutHtml(
-            [
-              "     ___     " + "root@easyroc",
-              " ___╱   ╲___  " + "—".repeat(18),
-              "╱           ╲ " + "<span class='accent'>OS</span>     static html",
-              "╲___________╱ " + "<span class='accent'>Host</span>   easyroc.local",
-              "              " + "<span class='accent'>Kernel</span> curiosity 6.x",
-              "    easyroc   " + "<span class='accent'>Shell</span>  web-console",
-              "              " + "<span class='accent'>Uptime</span> since you loaded",
-            ].join("\n")
-          );
-          return;
-        }
-
-        if (cmd === "fortune") {
-          appendOut(fortunes[Math.floor(Math.random() * fortunes.length)], "muted");
-          return;
-        }
-
-        if (cmd === "theme") {
-          themeIndex = (themeIndex + 1) % themes.length;
-          html.className = themes[themeIndex];
-          appendOut("theme → " + themeNames[themeIndex] + "  （再输入 theme 可轮换）", "muted");
-          return;
-        }
-
-        if (cmd === "ping") {
-          appendOut("easyroc is alive · latency ~0 ms · packet coffee not included", "muted");
-          return;
-        }
-
-        if (cmd === "open") {
-          const a = arg.toLowerCase();
-          if (a === "rss" || a === "feed") {
-            window.open("/feed.xml", "_blank", "noopener,noreferrer");
-            appendOut("opened rss.xml in new tab", "muted");
-            return;
-          }
-          if (a === "mail" || a === "email") {
-            window.location.href = "mailto:hello@example.com";
-            appendOut("mailto triggered", "muted");
-            return;
-          }
-          appendOut("用法: open rss  |  open mail", "err");
-          return;
-        }
-
-        if (cmd === "sudo") {
-          appendOut(
-            lower.includes("make me a sandwich")
-              ? "okay… here is a virtual sandwich 🥪"
-              : "sudo: 本站为平权 shell，不执行特权命令（开玩笑的，只是静态页）",
-            lower.includes("sandwich") ? "muted" : "err"
-          );
-          return;
-        }
-
-        if (cmd === "42") {
-          appendOut("生命、宇宙以及一切的答案是 42。——但先把博客写完。", "muted");
-          return;
-        }
-
-        appendOut('command not found: ' + escapeHtml(parts[0]) + ' · 输入 help', "err");
-      }
-
-      function tabComplete() {
-        const v = input.value;
-        const m = v.match(/^(\S*)/);
-        const prefix = m ? m[1] : "";
-        const hit = cmds.filter((c) => c.startsWith(prefix.toLowerCase()));
-        if (hit.length === 1) {
-          input.value = hit[0] + (v.includes(" ") ? v.slice(prefix.length) : " ");
-          return;
-        }
-        if (hit.length > 1) {
-          appendOut(hit.join("  "), "muted");
-        }
+      function looksLikeUrl(s) {
+        s = s.trim();
+        if (!s) return false;
+        if (/^https?:\/\//i.test(s)) return true;
+        if (/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(s) && !/\s/.test(s)) return true;
+        return false;
       }
 
       form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const v = input.value;
-        input.value = "";
-        runCommand(v);
-        input.focus();
-      });
-
-      input.addEventListener("input", function () {
-        histNav = -1;
-      });
-
-      input.addEventListener("keydown", function (e) {
-        if (e.key === "Tab") {
+        var v = q.value.trim();
+        if (!v) {
           e.preventDefault();
-          tabComplete();
           return;
         }
-        if (e.key === "l" && (e.ctrlKey || e.metaKey)) {
+        if (looksLikeUrl(v)) {
           e.preventDefault();
-          clearLog();
-          return;
-        }
-        if (e.key === "ArrowUp") {
-          e.preventDefault();
-          if (history.length === 0) return;
-          if (histNav === -1) histNav = history.length - 1;
-          else if (histNav > 0) histNav -= 1;
-          input.value = history[histNav];
-          return;
-        }
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          if (histNav === -1) return;
-          if (histNav < history.length - 1) {
-            histNav += 1;
-            input.value = history[histNav];
-          } else {
-            histNav = -1;
-            input.value = "";
-          }
+          var url = v;
+          if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+          window.open(url, "_blank", "noopener,noreferrer");
         }
       });
-
-      document.querySelector(".dot-r").addEventListener("click", clearLog);
-      document.querySelector(".dot-y").addEventListener("click", function () {
-        runCommand("fortune");
-      });
-      document.querySelector(".dot-g").addEventListener("click", function () {
-        input.focus();
-      });
-      document.getElementById("term-focus-btn").addEventListener("click", function () {
-        input.focus();
-      });
-
-      input.focus();
     })();
   </script>
 </body>
