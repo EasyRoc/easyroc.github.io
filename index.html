@@ -4,11 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>easyroc</title>
-  <!-- 可选：静态资源走 jsDelivr（GitHub 源）。content 填「仓库根」的 CDN 地址，末尾建议带 / -->
-  <!-- 示例：https://cdn.jsdelivr.net/gh/你的用户名/easyroc@main/ -->
-  <meta name="easyroc-asset-cdn" content="" />
-  <!-- 与 wallpapers.json 首张一致；使用 CDN 时请把 href 改成与上面 meta 拼出的完整 URL 一致 -->
-  <link rel="preload" as="image" href="png/sky.png" fetchpriority="high" />
+  <!-- 线上（如 GitHub Pages）用 jsDelivr 拉 png/；本地 file:// 或 localhost 时脚本会自动忽略 CDN -->
+  <meta name="easyroc-asset-cdn" content="https://cdn.jsdelivr.net/gh/EasyRoc/easyroc.github.io@main/" />
+  <link id="preconnect-jsdelivr" rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <script>
+    (function () {
+      var loc = window.location;
+      var local =
+        loc.protocol === "file:" ||
+        /^localhost$/i.test(loc.hostname) ||
+        loc.hostname === "127.0.0.1";
+      if (local) {
+        var pc = document.getElementById("preconnect-jsdelivr");
+        if (pc && pc.parentNode) pc.parentNode.removeChild(pc);
+      }
+      var m = document.querySelector('meta[name="easyroc-asset-cdn"]');
+      var base = (m && m.getAttribute("content")) || "";
+      base = typeof base === "string" ? base.trim() : "";
+      var first = "png/sky.png";
+      var href = local || !base ? first : (base.slice(-1) === "/" ? base : base + "/") + first;
+      var l = document.createElement("link");
+      l.rel = "preload";
+      l.as = "image";
+      l.href = href;
+      if ("fetchPriority" in l) l.fetchPriority = "high";
+      document.head.appendChild(l);
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
@@ -650,10 +672,6 @@
             <img src="https://www.google.com/s2/favicons?domain=outlook.live.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
             <span class="label">Outlook</span>
           </a>
-          <a class="dock-item" href="https://github.com" target="_blank" rel="noopener noreferrer">
-            <img src="https://www.google.com/s2/favicons?domain=github.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
-            <span class="label">GitHub</span>
-          </a>
         </nav>
       </div>
     </div>
@@ -686,6 +704,14 @@
       if (assetCdnMeta) {
         var _cdn = assetCdnMeta.getAttribute("content");
         if (_cdn) ASSET_BASE = _cdn.trim();
+      }
+      var _assetLoc = window.location;
+      if (
+        _assetLoc.protocol === "file:" ||
+        /^localhost$/i.test(_assetLoc.hostname) ||
+        _assetLoc.hostname === "127.0.0.1"
+      ) {
+        ASSET_BASE = "";
       }
 
       var html = document.documentElement;
@@ -945,7 +971,7 @@
       var engineLabelEl = document.getElementById("engine-label");
 
       var ENGINE_ORDER = ["google", "baidu", "bing"];
-      var ENGINE_LABELS = { google: "Google", baidu: "百度", bing: "必应" };
+      var ENGINE_LABELS = { google: "谷歌", baidu: "百度", bing: "必应" };
       var engineIndex = 0;
 
       var endpoints = {
