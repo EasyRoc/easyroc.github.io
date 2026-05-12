@@ -275,12 +275,19 @@
         0 12px 40px rgba(30, 40, 60, 0.08);
     }
 
+    .omnibar-wrap {
+      position: relative;
+      width: min(100%, 560px);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     .omnibar {
       position: relative;
       display: flex;
       align-items: center;
       gap: 4px;
-      width: min(100%, 560px);
+      width: 100%;
       padding: 6px 10px 6px 8px;
       border-radius: var(--radius-pill);
     }
@@ -290,9 +297,11 @@
       z-index: 2;
       flex-shrink: 0;
       display: flex;
+      flex-direction: row;
       align-items: center;
       justify-content: center;
-      padding: 8px 10px;
+      padding: 10px 12px;
+      min-width: 4.5em;
       border: none;
       background: transparent;
       color: var(--hero-muted);
@@ -310,12 +319,29 @@
       background: rgba(0, 0, 0, 0.06);
     }
 
-    .ico-search-btn .ico-search-svg {
-      display: block;
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      opacity: 0.9;
+    .ico-search-btn .engine-label {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--hero-text);
+      line-height: 1.2;
+      pointer-events: none;
+    }
+
+    @keyframes engine-pulse {
+      0% {
+        transform: scale(1);
+      }
+      35% {
+        transform: scale(1.06);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .ico-search-btn.is-engine-pulse {
+      animation: engine-pulse 0.45s ease;
     }
 
     .omnibar .omni-input {
@@ -348,8 +374,21 @@
       color: var(--input-placeholder);
     }
 
+    /* 站点条：置于底栏上方；由脚本在搜索有内容时设置 [hidden] 隐藏 */
+    .dock-band {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      flex-shrink: 0;
+      margin-bottom: 10px;
+    }
+
+    .dock-band[hidden] {
+      display: none !important;
+    }
+
     .dock-wrap {
-      margin-top: clamp(96px, 14vh, 142px);
+      margin-top: 0;
       width: fit-content;
       max-width: 100%;
       margin-left: auto;
@@ -558,27 +597,28 @@
     <main class="hero" id="hero">
       <p class="tagline" id="hero-tagline">专注当下，享受生活</p>
 
-      <form class="omnibar glass-panel" id="search-form" action="https://www.google.com/search" method="get" target="_blank" rel="noopener noreferrer">
-        <button type="button" class="ico-search-btn" id="engine-cycle" title="当前：Google，点击切换" aria-label="切换搜索引擎，当前为 Google">
-          <svg class="ico-search-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="10.5" cy="10.5" r="6.25" stroke="currentColor" stroke-width="1.65" />
-            <path d="M15.2 15.2 21 21" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" />
-          </svg>
-        </button>
-        <input
-          type="text"
-          id="q"
-          name="q"
-          class="omni-input"
-          role="searchbox"
-          aria-label="搜索或输入网址"
-          placeholder="此刻，你想了解什么？"
-          autocomplete="off"
-          enterkeyhint="search"
-          inputmode="search"
-        />
-      </form>
+      <div class="omnibar-wrap">
+        <form class="omnibar glass-panel" id="search-form" action="https://www.google.com/search" method="get" target="_blank" rel="noopener noreferrer">
+          <button type="button" class="ico-search-btn" id="engine-cycle" title="当前：Google，点击切换搜索引擎" aria-label="切换搜索引擎，当前为 Google">
+            <span class="engine-label" id="engine-label">Google</span>
+          </button>
+          <input
+            type="text"
+            id="q"
+            name="q"
+            class="omni-input"
+            role="searchbox"
+            aria-label="搜索或输入网址"
+            placeholder="此刻，你想了解什么？"
+            autocomplete="off"
+            enterkeyhint="search"
+            inputmode="search"
+          />
+        </form>
+      </div>
+    </main>
 
+    <div class="dock-band" id="dock-band">
       <div class="dock-wrap" id="dock">
         <nav class="dock-grid" aria-label="网站快捷方式">
           <a class="dock-item" href="https://www.bilibili.com" target="_blank" rel="noopener noreferrer">
@@ -611,7 +651,7 @@
           </a>
         </nav>
       </div>
-    </main>
+    </div>
 
     <footer class="bottom-bar">
       <div class="weather" id="weather" aria-live="polite">
@@ -647,6 +687,14 @@
       var weatherDesc = document.getElementById("weather-desc");
       var clock24El = document.getElementById("clock-24");
       var clockWeekdayEl = document.getElementById("clock-weekday");
+      var dockBand = document.getElementById("dock-band");
+
+      function updateDockForQuery() {
+        if (!searchInput || !dockBand) return;
+        var has = searchInput.value.trim().length > 0;
+        dockBand.hidden = has;
+        dockBand.setAttribute("aria-hidden", has ? "true" : "false");
+      }
 
       function applyTheme(theme) {
         if (theme !== "light" && theme !== "dark") theme = "dark";
@@ -675,12 +723,18 @@
         glassOverlay.setAttribute("aria-hidden", on ? "false" : "true");
       }
 
-      searchInput.addEventListener("focus", function () {
-        setGlass(true);
-      });
-      searchInput.addEventListener("blur", function () {
-        setGlass(false);
-      });
+      if (searchInput) {
+        searchInput.addEventListener("focus", function () {
+          setGlass(true);
+        });
+        searchInput.addEventListener("blur", function () {
+          setGlass(false);
+        });
+
+        searchInput.addEventListener("input", updateDockForQuery);
+        searchInput.addEventListener("change", updateDockForQuery);
+        updateDockForQuery();
+      }
 
       function updateClock() {
         var d = new Date();
@@ -846,6 +900,7 @@
       var form = document.getElementById("search-form");
       var q = document.getElementById("q");
       var engineCycleBtn = document.getElementById("engine-cycle");
+      var engineLabelEl = document.getElementById("engine-label");
 
       var ENGINE_ORDER = ["google", "baidu", "bing"];
       var ENGINE_LABELS = { google: "Google", baidu: "百度", bing: "必应" };
@@ -873,8 +928,19 @@
       function updateEngineButton() {
         if (!engineCycleBtn) return;
         var label = ENGINE_LABELS[currentEngine()];
-        engineCycleBtn.setAttribute("title", "当前：" + label + "，点击切换");
+        engineCycleBtn.setAttribute("title", "当前：" + label + "，点击切换搜索引擎");
         engineCycleBtn.setAttribute("aria-label", "切换搜索引擎，当前为 " + label);
+        if (engineLabelEl) engineLabelEl.textContent = label;
+      }
+
+      function pulseEngineBtn() {
+        if (!engineCycleBtn) return;
+        engineCycleBtn.classList.remove("is-engine-pulse");
+        void engineCycleBtn.offsetWidth;
+        engineCycleBtn.classList.add("is-engine-pulse");
+        window.setTimeout(function () {
+          engineCycleBtn.classList.remove("is-engine-pulse");
+        }, 480);
       }
 
       try {
@@ -892,19 +958,15 @@
         } catch (err) {}
         syncForm();
         updateEngineButton();
+        pulseEngineBtn();
       }
 
-      if (form && engineCycleBtn) {
-        form.addEventListener(
-          "click",
-          function (e) {
-            if (!e.target || !e.target.closest || !e.target.closest("#engine-cycle")) return;
-            e.preventDefault();
-            e.stopPropagation();
-            cycleEngine();
-          },
-          true
-        );
+      if (engineCycleBtn) {
+        engineCycleBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          cycleEngine();
+        });
 
         engineCycleBtn.addEventListener("keydown", function (e) {
           if (e.key === " " || e.key === "Enter") {
@@ -925,19 +987,21 @@
         return false;
       }
 
-      form.addEventListener("submit", function (e) {
-        var v = q.value.trim();
-        if (!v) {
-          e.preventDefault();
-          return;
-        }
-        if (looksLikeUrl(v)) {
-          e.preventDefault();
-          var url = v;
-          if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-          window.open(url, "_blank", "noopener,noreferrer");
-        }
-      });
+      if (form && q) {
+        form.addEventListener("submit", function (e) {
+          var v = q.value.trim();
+          if (!v) {
+            e.preventDefault();
+            return;
+          }
+          if (looksLikeUrl(v)) {
+            e.preventDefault();
+            var url = v;
+            if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+            window.open(url, "_blank", "noopener,noreferrer");
+          }
+        });
+      }
     })();
   </script>
 </body>
