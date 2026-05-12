@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Easyroc</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0c0e;
+      --bg-elevated: #141418;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --accent: #c8f31a;
+      --accent-soft: rgba(200, 243, 26, 0.12);
+      --border: rgba(255, 255, 255, 0.06);
+      --radius: 14px;
+      --font-sans: "DM Sans", system-ui, sans-serif;
+      --font-display: "Fraunces", Georgia, serif;
+      --max: 1120px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .noise {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      opacity: 0.035;
+      z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .glow {
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(90vw, 720px);
+      height: min(45vh, 420px);
+      background: radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 65%);
+      z-index: 0;
+      filter: blur(60px);
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max);
+      margin-inline: auto;
+      padding: 28px clamp(20px, 5vw, 40px) 56px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 40px;
+    }
+
+    .mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      font-size: 1rem;
+    }
+
+    .mark span {
+      display: inline-flex;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #e8ff7a);
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    nav a {
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    nav a.nav-cta {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    nav a.nav-cta:hover {
+      opacity: 0.92;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-block: clamp(24px, 8vh, 80px);
+    }
+
+    .hero .status + h1 {
+      margin-top: 28px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2.25rem, 6vw, 3.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin: 0 0 16px;
+      max-width: 12ch;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .hero-lede {
+      margin: 0 0 28px;
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 36ch;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      width: fit-content;
+    }
+
+    .status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    footer {
+      margin-top: auto;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    footer .links {
+      display: flex;
+      gap: 20px;
+    }
+
+    footer a:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <a href="/" class="mark" aria-label="首页">
+        <span>e</span>
+        Easyroc
+      </a>
+      <nav aria-label="主导航">
+        <a href="mailto:hello@example.com">联系</a>
+        <a href="/feed.xml" class="nav-cta">RSS</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="status" role="status">内容与归档筹备中</p>
+        <h1 id="hero-title">把复杂的事，<em>写简单</em>。</h1>
+        <p class="hero-lede">个人博客，上线后这里会列出文章。现在先留一页干净的门面。</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2026 Easyroc</p>
+      <div class="links">
+        <a href="https://github.com">GitHub</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
