@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>easyroc</title>
+  <!-- 与 wallpapers.json 首张一致，便于 GitHub Pages 尽早拉取首屏背景 -->
+  <link rel="preload" as="image" href="png/sky.png" fetchpriority="high" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
@@ -817,6 +819,19 @@
         });
       }
 
+      /** 仅解析路径，不预下载整张图（避免 GitHub Pages 上多张巨图阻塞首屏） */
+      function wallpaperPathsFromList(raw) {
+        if (!raw || !raw.length) return [];
+        var out = [];
+        for (var i = 0; i < raw.length; i++) {
+          var path = typeof raw[i] === "string" ? raw[i].trim() : "";
+          if (!path) continue;
+          if (path.indexOf("/") === -1) path = "png/" + path;
+          out.push(path);
+        }
+        return out;
+      }
+
       function normalizeList(raw) {
         if (!raw || !raw.length) return Promise.resolve([]);
         var tasks = raw.map(function (item) {
@@ -844,17 +859,16 @@
           })
           .then(function (data) {
             if (!Array.isArray(data)) return [];
-            return normalizeList(data);
+            return wallpaperPathsFromList(data);
           })
           .catch(function () {
             return [];
           })
-          .then(function (jsonUrls) {
-            if (jsonUrls.length) return jsonUrls;
-            return normalizeList(PORTAL_WALLPAPERS).then(function (inlineUrls) {
-              if (inlineUrls.length) return inlineUrls;
-              return probeNumbered(12);
-            });
+          .then(function (paths) {
+            if (paths.length) return paths;
+            var fb = wallpaperPathsFromList(PORTAL_WALLPAPERS);
+            if (fb.length) return fb;
+            return probeNumbered(12);
           });
       }
 
