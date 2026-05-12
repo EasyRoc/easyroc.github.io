@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>easyroc</title>
-  <!-- 与 wallpapers.json 首张一致，便于 GitHub Pages 尽早拉取首屏背景 -->
+  <!-- 可选：静态资源走 jsDelivr（GitHub 源）。content 填「仓库根」的 CDN 地址，末尾建议带 / -->
+  <!-- 示例：https://cdn.jsdelivr.net/gh/你的用户名/easyroc@main/ -->
+  <meta name="easyroc-asset-cdn" content="" />
+  <!-- 与 wallpapers.json 首张一致；使用 CDN 时请把 href 改成与上面 meta 拼出的完整 URL 一致 -->
   <link rel="preload" as="image" href="png/sky.png" fetchpriority="high" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -678,6 +681,13 @@
       /** 与 png/wallpapers.json 同步；fetch 失败（如 file://）时仍可用本地 png 背景 */
       var PORTAL_WALLPAPERS = ["sky.png", "sea.png","grassland.png"];
 
+      var assetCdnMeta = document.querySelector('meta[name="easyroc-asset-cdn"]');
+      var ASSET_BASE = "";
+      if (assetCdnMeta) {
+        var _cdn = assetCdnMeta.getAttribute("content");
+        if (_cdn) ASSET_BASE = _cdn.trim();
+      }
+
       var html = document.documentElement;
       var body = document.body;
       var searchInput = document.getElementById("q");
@@ -805,9 +815,23 @@
         }
       }
 
+      /** 壁纸与 wallpapers.json 的地址；已 http(s) 开头则原样返回 */
+      function resolveAsset(path) {
+        if (!path) return path;
+        if (/^https?:\/\//i.test(path)) return path;
+        var base = ASSET_BASE;
+        if (!base) return toAbsoluteUrl(path);
+        if (base.slice(-1) !== "/") base += "/";
+        try {
+          return new URL(path.replace(/^\//, ""), base).href;
+        } catch (e2) {
+          return toAbsoluteUrl(path);
+        }
+      }
+
       function loadImageUrl(url) {
         return new Promise(function (resolve) {
-          var abs = toAbsoluteUrl(url);
+          var abs = resolveAsset(url);
           var img = new Image();
           img.onload = function () {
             resolve(abs);
@@ -852,7 +876,7 @@
       }
 
       function initWallpapers() {
-        return fetch("png/wallpapers.json")
+        return fetch(resolveAsset("png/wallpapers.json"))
           .then(function (r) {
             if (!r.ok) throw new Error("no json");
             return r.json();
@@ -877,6 +901,10 @@
           bgStack.classList.add("no-photo");
           return;
         }
+
+        urls = urls.map(function (p) {
+          return resolveAsset(p);
+        });
 
         bgStack.classList.remove("no-photo");
         var frontEl = paneA;
