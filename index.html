@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>easyroc</title>
-  <!-- 线上（如 GitHub Pages）用 jsDelivr 拉 png/；本地 file:// 或 localhost 时脚本会自动忽略 CDN -->
-  <meta name="easyroc-asset-cdn" content="https://cdn.jsdelivr.net/gh/EasyRoc/easyroc.github.io@main/" />
-  <link id="preconnect-jsdelivr" rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <!-- 线上静态资源用 GitHub raw（与仓库 main 一致）；本地 file:// / localhost 时脚本会忽略并走相对路径 -->
+  <meta name="easyroc-asset-cdn" content="https://raw.githubusercontent.com/EasyRoc/easyroc.github.io/main/" />
+  <link id="preconnect-gh-raw" rel="preconnect" href="https://raw.githubusercontent.com" crossorigin />
   <script>
     (function () {
       var loc = window.location;
@@ -15,7 +15,7 @@
         /^localhost$/i.test(loc.hostname) ||
         loc.hostname === "127.0.0.1";
       if (local) {
-        var pc = document.getElementById("preconnect-jsdelivr");
+        var pc = document.getElementById("preconnect-gh-raw");
         if (pc && pc.parentNode) pc.parentNode.removeChild(pc);
       }
       var m = document.querySelector('meta[name="easyroc-asset-cdn"]');
@@ -901,11 +901,18 @@
         return normalizeList(urls);
       }
 
+      function fetchWallpapersManifest() {
+        return fetch(resolveAsset("png/wallpapers.json")).then(function (r) {
+          if (!r.ok) throw new Error("no json");
+          return r.json();
+        });
+      }
+
       function initWallpapers() {
-        return fetch(resolveAsset("png/wallpapers.json"))
-          .then(function (r) {
-            if (!r.ok) throw new Error("no json");
-            return r.json();
+        return fetchWallpapersManifest()
+          .catch(function () {
+            if (ASSET_BASE) ASSET_BASE = "";
+            return fetchWallpapersManifest();
           })
           .then(function (data) {
             if (!Array.isArray(data)) return [];
