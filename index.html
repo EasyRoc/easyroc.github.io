@@ -503,9 +503,19 @@
       padding-top: 16px;
     }
 
-    /* 天气隐藏时底栏仅保留引言 + 时钟，避免三列网格出现空白列 */
+    /* 天气隐藏：仍用三列网格，引言占中间列、时钟占右列，引言相对视口水平居中 */
     .bottom-bar:has(#weather[hidden]) {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr auto 1fr;
+    }
+
+    .bottom-bar:has(#weather[hidden]) .quote-block {
+      grid-column: 2;
+      justify-self: center;
+    }
+
+    .bottom-bar:has(#weather[hidden]) .clock-block {
+      grid-column: 3;
+      justify-self: end;
     }
 
     @media (max-width: 720px) {
@@ -532,6 +542,16 @@
 
       .bottom-bar:has(#weather[hidden]) {
         grid-template-columns: 1fr;
+      }
+
+      .bottom-bar:has(#weather[hidden]) .quote-block,
+      .bottom-bar:has(#weather[hidden]) .clock-block {
+        grid-column: auto;
+        justify-self: center;
+      }
+
+      .bottom-bar:has(#weather[hidden]) .clock-block {
+        text-align: center;
       }
     }
 
