@@ -336,16 +336,17 @@
       color: var(--hero-muted);
       cursor: pointer;
       border-radius: 12px;
-      transition: background 0.2s ease, color 0.2s ease;
+      transition: color 0.2s ease;
     }
 
     .ico-search-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
+      background: transparent;
       color: var(--hero-text);
     }
 
     [data-theme="light"] .ico-search-btn:hover {
-      background: rgba(0, 0, 0, 0.06);
+      background: transparent;
+      color: var(--hero-text);
     }
 
     .ico-search-btn .engine-label {
@@ -355,22 +356,6 @@
       color: var(--hero-text);
       line-height: 1.2;
       pointer-events: none;
-    }
-
-    @keyframes engine-pulse {
-      0% {
-        transform: scale(1);
-      }
-      35% {
-        transform: scale(1.06);
-      }
-      100% {
-        transform: scale(1);
-      }
-    }
-
-    .ico-search-btn.is-engine-pulse {
-      animation: engine-pulse 0.45s ease;
     }
 
     .omnibar .omni-input {
@@ -651,27 +636,27 @@
       <div class="dock-wrap" id="dock">
         <nav class="dock-grid" aria-label="网站快捷方式">
           <a class="dock-item" href="https://www.bilibili.com" target="_blank" rel="noopener noreferrer">
-            <img src="https://www.google.com/s2/favicons?domain=www.bilibili.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <img src="icon/bilibili.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
             <span class="label">哔哩哔哩</span>
           </a>
           <a class="dock-item" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
-            <img src="https://www.google.com/s2/favicons?domain=www.youtube.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <img src="icon/youtube.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
             <span class="label">YouTube</span>
           </a>
           <a class="dock-item" href="https://www.zhihu.com" target="_blank" rel="noopener noreferrer">
-            <img src="https://www.google.com/s2/favicons?domain=www.zhihu.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <img src="icon/zhihu.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
             <span class="label">知乎</span>
           </a>
           <a class="dock-item" href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">
-            <img src="https://t2.gstatic.com/faviconV2?client=SOCIAL&amp;type=FAVICON&amp;fallback_opts=TYPE,SIZE,URL&amp;url=https://chat.openai.com/&amp;size=128" alt="" loading="lazy" decoding="async" />
+            <img src="icon/chatgpt.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
             <span class="label">ChatGPT</span>
           </a>
           <a class="dock-item" href="https://chat.deepseek.com" target="_blank" rel="noopener noreferrer">
-            <img src="https://www.google.com/s2/favicons?domain=chat.deepseek.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <img src="icon/deepseek.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
             <span class="label">DeepSeek</span>
           </a>
           <a class="dock-item" href="https://outlook.live.com" target="_blank" rel="noopener noreferrer">
-            <img src="https://www.google.com/s2/favicons?domain=outlook.live.com&amp;sz=128" alt="" loading="lazy" decoding="async" />
+            <img src="icon/outlook.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
             <span class="label">Outlook</span>
           </a>
         </nav>
@@ -1010,16 +995,6 @@
         if (engineLabelEl) engineLabelEl.textContent = label;
       }
 
-      function pulseEngineBtn() {
-        if (!engineCycleBtn) return;
-        engineCycleBtn.classList.remove("is-engine-pulse");
-        void engineCycleBtn.offsetWidth;
-        engineCycleBtn.classList.add("is-engine-pulse");
-        window.setTimeout(function () {
-          engineCycleBtn.classList.remove("is-engine-pulse");
-        }, 480);
-      }
-
       try {
         var saved = sessionStorage.getItem(ENGINE_STORAGE_KEY);
         if (saved != null) {
@@ -1035,7 +1010,6 @@
         } catch (err) {}
         syncForm();
         updateEngineButton();
-        pulseEngineBtn();
       }
 
       if (engineCycleBtn) {
