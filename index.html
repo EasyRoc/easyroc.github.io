@@ -24,7 +24,7 @@
       var m = document.querySelector('meta[name="easyroc-asset-cdn"]');
       var base = (m && m.getAttribute("content")) || "";
       base = typeof base === "string" ? base.trim() : "";
-      var first = "png/sky.png";
+      var first = "png/sky.webp";
       var href = local || !base ? first : (base.slice(-1) === "/" ? base : base + "/") + first;
       var l = document.createElement("link");
       l.rel = "preload";
@@ -503,6 +503,11 @@
       padding-top: 16px;
     }
 
+    /* 天气隐藏时底栏仅保留引言 + 时钟，避免三列网格出现空白列 */
+    .bottom-bar:has(#weather[hidden]) {
+      grid-template-columns: 1fr auto;
+    }
+
     @media (max-width: 720px) {
       .bottom-bar {
         grid-template-columns: 1fr;
@@ -523,6 +528,10 @@
         order: 3;
         justify-self: center;
         text-align: center;
+      }
+
+      .bottom-bar:has(#weather[hidden]) {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -675,7 +684,7 @@
     </div>
 
     <footer class="bottom-bar">
-      <div class="weather" id="weather" aria-live="polite">
+      <div class="weather" id="weather" hidden aria-hidden="true">
         <strong id="weather-temp">--°</strong>
         <span id="weather-desc">天气加载中…</span>
       </div>
@@ -693,8 +702,8 @@
     (function () {
       var THEME_KEY = "easyroc-portal-theme";
       var ROTATE_MS = 60 * 1000;
-      /** 与 png/wallpapers.json 同步；fetch 失败（如 file://）时仍可用本地 png 背景 */
-      var PORTAL_WALLPAPERS = ["sky.png", "sea.png","grassland.png"];
+      /** 与 png/wallpapers.json 同步；fetch 失败（如 file://）时仍可用本地壁纸 */
+      var PORTAL_WALLPAPERS = ["sky.webp", "sea.webp", "grassland.webp"];
 
       var assetCdnMeta = document.querySelector('meta[name="easyroc-asset-cdn"]');
       var ASSET_BASE = "";
@@ -718,8 +727,6 @@
       var paneA = document.getElementById("bg-pane-a");
       var paneB = document.getElementById("bg-pane-b");
       var bgStack = document.getElementById("bg-stack");
-      var weatherTemp = document.getElementById("weather-temp");
-      var weatherDesc = document.getElementById("weather-desc");
       var clock24El = document.getElementById("clock-24");
       var clockWeekdayEl = document.getElementById("clock-weekday");
       var dockBand = document.getElementById("dock-band");
@@ -779,56 +786,6 @@
 
       updateClock();
       setInterval(updateClock, 1000);
-
-      function wmoDesc(code) {
-        if (code === 0) return "晴朗";
-        if (code === 1 || code === 2) return "少云";
-        if (code === 3) return "阴";
-        if (code >= 45 && code <= 48) return "雾";
-        if (code >= 51 && code <= 57) return "毛毛雨";
-        if (code >= 61 && code <= 67) return "雨";
-        if (code >= 71 && code <= 77) return "雪";
-        if (code >= 80 && code <= 82) return "阵雨";
-        if (code >= 95) return "雷暴";
-        return "多云";
-      }
-
-      function loadWeather(lat, lon) {
-        var url =
-          "https://api.open-meteo.com/v1/forecast?latitude=" +
-          lat +
-          "&longitude=" +
-          lon +
-          "&current_weather=true&timezone=auto";
-        fetch(url)
-          .then(function (r) {
-            return r.json();
-          })
-          .then(function (data) {
-            var cw = data.current_weather;
-            if (!cw) throw new Error("no data");
-            weatherTemp.textContent = Math.round(cw.temperature) + "°C";
-            weatherDesc.textContent = wmoDesc(cw.weathercode);
-          })
-          .catch(function () {
-            weatherTemp.textContent = "--°";
-            weatherDesc.textContent = "天气暂不可用";
-          });
-      }
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          function (pos) {
-            loadWeather(pos.coords.latitude, pos.coords.longitude);
-          },
-          function () {
-            loadWeather(31.23, 121.47);
-          },
-          { timeout: 8000, maximumAge: 600000 }
-        );
-      } else {
-        loadWeather(31.23, 121.47);
-      }
 
       function toAbsoluteUrl(url) {
         try {
