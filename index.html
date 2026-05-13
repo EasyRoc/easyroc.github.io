@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>easyroc</title>
+  <title>奇鸣起始页</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
   <link rel="apple-touch-icon" href="favicon.svg" />
   <!-- 线上静态资源用 GitHub raw（与仓库 main 一致）；本地 file:// / localhost 时脚本会忽略并走相对路径 -->
@@ -52,8 +52,8 @@
     :root {
       --font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --radius-pill: 999px;
-      --radius-dock: 22px;
-      --radius-icon: 14px;
+      --radius-dock: 16px;
+      --radius-icon: 10px;
     }
 
     /* 深色 = 沉浸式（壁纸 + 浅色字），浅色 = 高对比玻璃 + 深色字 */
@@ -279,14 +279,14 @@
       background: var(--glass-inner);
     }
 
-    /* —— 中间主区 —— */
+    /* —— 中间主区：搜索框靠上（与顶栏留出间距），为底部 Dock / 底栏留出空间 —— */
     .hero {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 24px 0 32px;
+      justify-content: flex-start;
+      padding: clamp(100px, 86vh, 144px) 0 clamp(20px, 4vh, 40px);
       text-align: center;
     }
 
@@ -329,7 +329,7 @@
       align-items: center;
       gap: 4px;
       width: 100%;
-      padding: 6px 10px 6px 8px;
+      padding: 4px 10px 4px 8px;
       border-radius: var(--radius-pill);
     }
 
@@ -341,7 +341,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      padding: 10px 12px;
+      padding: 6px 11px;
       min-width: 4.5em;
       border: none;
       background: transparent;
@@ -362,21 +362,22 @@
     }
 
     .ico-search-btn .engine-label {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       letter-spacing: 0.03em;
       color: var(--hero-text);
-      line-height: 1.2;
+      line-height: 1.15;
       pointer-events: none;
     }
 
     .omnibar .omni-input {
       flex: 1;
       min-width: 0;
-      padding: 14px 8px;
+      padding: 9px 8px;
       font-family: inherit;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 500;
+      line-height: 1.25;
       color: var(--hero-text);
       background: transparent;
       border: none;
@@ -406,7 +407,7 @@
       justify-content: center;
       width: 100%;
       flex-shrink: 0;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .dock-band[hidden] {
@@ -419,15 +420,15 @@
       max-width: 100%;
       margin-left: auto;
       margin-right: auto;
-      padding: 8px 10px;
-      border-radius: 22px;
+      padding: 5px 7px;
+      border-radius: var(--radius-dock);
       background: var(--glass-bg-dock);
       border: 1px solid var(--glass-border);
       -webkit-backdrop-filter: blur(24px) saturate(1.7);
       backdrop-filter: blur(24px) saturate(1.7);
       box-shadow:
         0 1px 0 rgba(255, 255, 255, 0.03) inset,
-        0 24px 60px rgba(0, 0, 0, 0.18);
+        0 16px 44px rgba(0, 0, 0, 0.16);
       overflow-x: auto;
       overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
@@ -435,7 +436,7 @@
     }
 
     .dock-wrap::-webkit-scrollbar {
-      height: 6px;
+      height: 5px;
     }
 
     .dock-wrap::-webkit-scrollbar-thumb {
@@ -447,42 +448,42 @@
       display: flex;
       flex-wrap: nowrap;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
       width: max-content;
       max-width: none;
       margin-inline: auto;
-      padding: 0 0 2px;
+      padding: 0 0 1px;
     }
 
     .dock-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 3px;
       flex: 0 0 auto;
-      width: 70px;
-      padding: 4px 2px;
-      border-radius: 14px;
+      width: 56px;
+      padding: 2px 1px;
+      border-radius: var(--radius-icon);
       color: var(--hero-text);
       transition: background 0.2s, transform 0.15s;
     }
 
     .dock-item:hover {
       background: var(--glass-inner);
-      transform: translateY(-2px) scale(1.03);
+      transform: translateY(-1px) scale(1.02);
     }
 
     /* 与 portal2 一致：图标直接 img，固定尺寸 + 圆角，避免额外容器缩放发糊 */
     .dock-item > img {
-      width: 45px;
-      height: 45px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
       display: block;
       flex-shrink: 0;
     }
 
     .dock-item .label {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       color: var(--hero-muted);
       text-align: center;
@@ -676,27 +677,27 @@
       <div class="dock-wrap" id="dock">
         <nav class="dock-grid" aria-label="网站快捷方式">
           <a class="dock-item" href="https://www.bilibili.com" target="_blank" rel="noopener noreferrer">
-            <img src="icon/bilibili.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
+            <img src="icon/bilibili.jpeg" alt="" width="36" height="36" loading="lazy" decoding="async" />
             <span class="label">哔哩哔哩</span>
           </a>
           <a class="dock-item" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
-            <img src="icon/youtube.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
+            <img src="icon/youtube.jpeg" alt="" width="36" height="36" loading="lazy" decoding="async" />
             <span class="label">YouTube</span>
           </a>
           <a class="dock-item" href="https://www.zhihu.com" target="_blank" rel="noopener noreferrer">
-            <img src="icon/zhihu.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
+            <img src="icon/zhihu.jpeg" alt="" width="36" height="36" loading="lazy" decoding="async" />
             <span class="label">知乎</span>
           </a>
           <a class="dock-item" href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">
-            <img src="icon/chatgpt.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
+            <img src="icon/chatgpt.jpeg" alt="" width="36" height="36" loading="lazy" decoding="async" />
             <span class="label">ChatGPT</span>
           </a>
           <a class="dock-item" href="https://chat.deepseek.com" target="_blank" rel="noopener noreferrer">
-            <img src="icon/deepseek.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
+            <img src="icon/deepseek.jpeg" alt="" width="36" height="36" loading="lazy" decoding="async" />
             <span class="label">DeepSeek</span>
           </a>
           <a class="dock-item" href="https://outlook.live.com" target="_blank" rel="noopener noreferrer">
-            <img src="icon/outlook.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
+            <img src="icon/outlook.jpeg" alt="" width="36" height="36" loading="lazy" decoding="async" />
             <span class="label">Outlook</span>
           </a>
         </nav>
