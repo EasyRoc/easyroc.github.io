@@ -3,103 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>久坐提醒 — 别忘了休息</title>
+<title>正念休息</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any">
 <link rel="apple-touch-icon" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@450;600&display=swap" rel="stylesheet">
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #f5f2eb;
-    --card-bg: #fffef9;
-    --text: #3d3929;
-    --text-muted: #8c8670;
-    --primary: #6b8f71;
-    --primary-light: #a3c4a8;
-    --accent: #e07a5f;
-    --ring-bg: #e8e4d8;
-    --shadow: 0 4px 24px rgba(0,0,0,0.06);
-    --radius: 20px;
-    --sug-bg: #fdf8f0;
-    --sug-text: #6b5e4a;
-    --btn-pause-bg: #f0e8d8;
-    --btn-pause-text: var(--text);
-    --btn-pause-hover: #e6dcc8;
-    --btn-reset-border: #d5cfbf;
-    --btn-reset-hover: #f5f1e8;
-    --input-bg: #fdfcf7;
-    --input-border: #d5cfbf;
-    --toggle-bg: #e8e4d8;
-  }
-
-  [data-theme="light"] {
-    --bg: #f5f2eb;
-    --card-bg: #fffef9;
-    --text: #3d3929;
-    --text-muted: #8c8670;
-    --primary: #6b8f71;
-    --primary-light: #a3c4a8;
-    --accent: #e07a5f;
-    --ring-bg: #e8e4d8;
-    --shadow: 0 4px 24px rgba(0,0,0,0.06);
-    --radius: 20px;
-    --sug-bg: #fdf8f0;
-    --sug-text: #6b5e4a;
-    --btn-pause-bg: #f0e8d8;
-    --btn-pause-text: var(--text);
-    --btn-pause-hover: #e6dcc8;
-    --btn-reset-border: #d5cfbf;
-    --btn-reset-hover: #f5f1e8;
-    --input-bg: #fdfcf7;
-    --input-border: #d5cfbf;
-    --toggle-bg: #e8e4d8;
+    --bg:           #f5f5f7;
+    --card-bg:      #ffffff;
+    --card-border:  #e5e5e7;
+    --text:         #1d1d1f;
+    --text-muted:   #86868b;
+    --primary:      #5b8af0;
+    --primary-hov:  #4a7ae0;
+    --accent:       #34a87a;
+    --accent-hov:   #2d9a6e;
+    --ring-bg:      #e8e8ed;
+    --shadow:       0 2px 12px rgba(0,0,0,0.04);
+    --radius:       20px;
+    --sug-bg:       #f8f8fa;
+    --sug-text:     #6b6b70;
+    --btn-text:     #fff;
+    --btn-pause-bg:     #f0f0f2;
+    --btn-pause-text:   #1d1d1f;
+    --btn-pause-hover:  #e5e5e7;
+    --btn-reset-border: #d5d5d7;
+    --btn-reset-hover:  #f0f0f2;
+    --input-bg:     #f8f8fa;
+    --input-border: #d5d5d7;
+    --toggle-bg:    #f0f0f2;
+    --toggle-hover: #e5e5e7;
   }
 
   [data-theme="dark"] {
-    --bg: #1a1a2e;
-    --card-bg: #252540;
-    --text: #e8e4d8;
-    --text-muted: #9a94a8;
-    --primary: #7db784;
-    --primary-light: #3d5a40;
-    --accent: #e07a5f;
-    --ring-bg: #353550;
-    --shadow: 0 4px 24px rgba(0,0,0,0.3);
-    --radius: 20px;
-    --sug-bg: #2f2f4a;
-    --sug-text: #c8c0b0;
-    --btn-pause-bg: #353550;
-    --btn-pause-text: #e8e4d8;
-    --btn-pause-hover: #40405e;
-    --btn-reset-border: #454560;
-    --btn-reset-hover: #2f2f4a;
-    --input-bg: #2a2a45;
-    --input-border: #454560;
-    --toggle-bg: #353550;
+    --bg:           #1d1d1f;
+    --card-bg:      #2d2d2f;
+    --card-border:  #3d3d40;
+    --text:         #f5f5f7;
+    --text-muted:   #86868b;
+    --primary:      #6b9af7;
+    --primary-hov:  #7aa8ff;
+    --accent:       #40c489;
+    --accent-hov:   #4dd494;
+    --ring-bg:      #3d3d40;
+    --shadow:       0 2px 12px rgba(0,0,0,0.2);
+    --sug-bg:       #37373a;
+    --sug-text:     #9e9ea4;
+    --btn-text:     #ffffff;
+    --btn-pause-bg:     #3d3d40;
+    --btn-pause-text:   #f5f5f7;
+    --btn-pause-hover:  #4a4a4d;
+    --btn-reset-border: #4a4a4d;
+    --btn-reset-hover:  #37373a;
+    --input-bg:     #37373a;
+    --input-border: #4a4a4d;
+    --toggle-bg:    #3d3d40;
+    --toggle-hover: #4a4a4d;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
-      --bg: #1a1a2e;
-      --card-bg: #252540;
-      --text: #e8e4d8;
-      --text-muted: #9a94a8;
-      --primary: #7db784;
-      --primary-light: #3d5a40;
-      --accent: #e07a5f;
-      --ring-bg: #353550;
-      --shadow: 0 4px 24px rgba(0,0,0,0.3);
-      --radius: 20px;
-      --sug-bg: #2f2f4a;
-      --sug-text: #c8c0b0;
-      --btn-pause-bg: #353550;
-      --btn-pause-text: #e8e4d8;
-      --btn-pause-hover: #40405e;
-      --btn-reset-border: #454560;
-      --btn-reset-hover: #2f2f4a;
-      --input-bg: #2a2a45;
-      --input-border: #454560;
-      --toggle-bg: #353550;
+      --bg:           #1d1d1f;
+      --card-bg:      #2d2d2f;
+      --card-border:  #3d3d40;
+      --text:         #f5f5f7;
+      --text-muted:   #86868b;
+      --primary:      #6b9af7;
+      --primary-hov:  #7aa8ff;
+      --accent:       #40c489;
+      --accent-hov:   #4dd494;
+      --ring-bg:      #3d3d40;
+      --shadow:       0 2px 12px rgba(0,0,0,0.2);
+      --sug-bg:       #37373a;
+      --sug-text:     #9e9ea4;
+      --btn-text:     #ffffff;
+      --btn-pause-bg:     #3d3d40;
+      --btn-pause-text:   #f5f5f7;
+      --btn-pause-hover:  #4a4a4d;
+      --btn-reset-border: #4a4a4d;
+      --btn-reset-hover:  #37373a;
+      --input-bg:     #37373a;
+      --input-border: #4a4a4d;
+      --toggle-bg:    #3d3d40;
+      --toggle-hover: #4a4a4d;
     }
   }
 
@@ -117,60 +108,58 @@
   .card {
     background: var(--card-bg);
     border-radius: var(--radius);
+    border: 1px solid var(--card-border);
     box-shadow: var(--shadow);
-    padding: 48px 40px 40px;
-    max-width: 420px;
+    padding: 44px 40px 36px;
+    max-width: 400px;
     width: 100%;
     text-align: center;
-    transition: box-shadow 0.3s;
   }
 
   .card-header {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin-bottom: 4px;
+    gap: 10px;
+    margin-bottom: 2px;
   }
-  .card-header h1 {
-    margin-bottom: 0;
-  }
+
   h1 {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     font-weight: 600;
     color: var(--text);
-    letter-spacing: 0.02em;
+    line-height: 1.4;
   }
+
   .theme-toggle {
-    font-size: 1.3rem;
+    font-size: 1.15rem;
     background: var(--toggle-bg);
     border: none;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s, transform 0.15s;
+    transition: background 0.2s;
     padding: 0;
-    line-height: 1;
     flex-shrink: 0;
   }
-  .theme-toggle:active { transform: scale(0.9); }
-  .theme-toggle:hover { filter: brightness(1.1); }
+  .theme-toggle:hover { background: var(--toggle-hover); }
+
   .subtitle {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
 
-  /* ---- ring ---- */
+  /* ring */
   .ring-wrap {
     position: relative;
-    width: 220px;
-    height: 220px;
-    margin: 0 auto 24px;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 20px;
   }
   .ring-wrap svg {
     transform: rotate(-90deg);
@@ -180,16 +169,18 @@
   .ring-bg {
     fill: none;
     stroke: var(--ring-bg);
-    stroke-width: 10;
+    stroke-width: 8;
   }
   .ring-fg {
     fill: none;
     stroke: var(--primary);
-    stroke-width: 10;
+    stroke-width: 8;
     stroke-linecap: round;
-    transition: stroke-dashoffset 0.9s linear, stroke 0.5s;
+    transition: stroke-dashoffset 0.9s linear, stroke 0.4s;
   }
-  .ring-fg.breaking { stroke: var(--accent); }
+  .ring-fg.breaking {
+    stroke: var(--accent);
+  }
 
   .timer-text {
     position: absolute;
@@ -200,76 +191,87 @@
     justify-content: center;
   }
   .time {
-    font-size: 3rem;
-    font-weight: 700;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 2.8rem;
+    font-weight: 450;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
     line-height: 1;
+    color: var(--text);
   }
   .time-label {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
     margin-top: 6px;
   }
 
-  /* ---- status ---- */
+  /* status */
   .status {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     color: var(--text-muted);
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     min-height: 1.4em;
     transition: color 0.3s;
   }
-  .status.breaking { color: var(--accent); font-weight: 500; }
+  .status.breaking {
+    color: var(--accent);
+  }
 
-  /* ---- suggestion ---- */
+  /* suggestion */
   .suggestion {
     background: var(--sug-bg);
     border-radius: 12px;
-    padding: 16px 20px;
+    padding: 14px 18px;
     margin-bottom: 24px;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     color: var(--sug-text);
-    min-height: 52px;
+    min-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: opacity 0.3s;
     line-height: 1.5;
   }
-  .suggestion.empty { opacity: 0.4; }
+  .suggestion .sug-icon {
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+  .suggestion .sug-text {
+    transition: opacity 0.3s;
+  }
 
-  /* ---- buttons ---- */
+  /* buttons */
   .btn-row {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     justify-content: center;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
   button {
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 500;
     border: none;
     border-radius: 50px;
-    padding: 10px 28px;
+    padding: 10px 26px;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s, opacity 0.2s;
-    letter-spacing: 0.02em;
+    transition: background 0.2s, opacity 0.2s;
   }
-  button:active { transform: scale(0.96); }
-  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button:active { opacity: 0.8; }
+  button:disabled { opacity: 0.35; cursor: not-allowed; }
 
   .btn-start {
     background: var(--primary);
-    color: #fff;
+    color: var(--btn-text);
   }
-  .btn-start:hover:not(:disabled) { background: #5d7d63; }
+  .btn-start:hover:not(:disabled) { background: var(--primary-hov); }
+
   .btn-pause {
     background: var(--btn-pause-bg);
     color: var(--btn-pause-text);
   }
   .btn-pause:hover:not(:disabled) { background: var(--btn-pause-hover); }
+
   .btn-reset {
     background: transparent;
     color: var(--text-muted);
@@ -277,28 +279,28 @@
   }
   .btn-reset:hover:not(:disabled) { background: var(--btn-reset-hover); }
 
-  /* ---- settings ---- */
+  /* settings */
   .settings {
     display: flex;
     gap: 24px;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
   .setting {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
   }
   .setting label {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
   }
   .setting input {
-    width: 64px;
+    width: 60px;
     text-align: center;
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     padding: 6px 4px;
     border: 1.5px solid var(--input-border);
     border-radius: 10px;
@@ -308,17 +310,22 @@
     transition: border-color 0.2s;
   }
   .setting input:focus { border-color: var(--primary); }
+  .setting input[type="number"]::-webkit-inner-spin-button,
+  .setting input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none; margin: 0;
+  }
+  .setting input[type="number"] { -moz-appearance: textfield; }
 
-  /* ---- today count ---- */
+  /* today */
   .today {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
   }
   .today strong { color: var(--primary); font-weight: 600; }
 
-  /* ---- notification hint ---- */
+  /* notification hint */
   .notif-hint {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--accent);
     margin-top: 12px;
     display: none;
@@ -326,11 +333,12 @@
   .notif-hint.show { display: block; }
 
   @media (max-width: 440px) {
-    .card { padding: 32px 20px 28px; }
-    .ring-wrap { width: 180px; height: 180px; }
-    .time { font-size: 2.4rem; }
+    .card { padding: 28px 18px 24px; }
+    .ring-wrap { width: 170px; height: 170px; }
+    .time { font-size: 2.2rem; }
     .settings { gap: 16px; }
-    button { padding: 10px 20px; font-size: 0.85rem; }
+    button { padding: 9px 20px; font-size: 0.84rem; }
+    h1 { font-size: 1.2rem; }
   }
 </style>
 </head>
@@ -338,12 +346,11 @@
 
 <div class="card">
   <div class="card-header">
-    <h1>🧘 久坐提醒</h1>
-    <button class="theme-toggle" id="themeToggle" title="切换暗黑/明亮主题">🌙</button>
+    <h1>🧘 正念休息</h1>
+    <button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button>
   </div>
   <p class="subtitle">坐久了，记得起来活动一下</p>
 
-  <!-- progress ring -->
   <div class="ring-wrap">
     <svg viewBox="0 0 200 200">
       <circle class="ring-bg" cx="100" cy="100" r="90"/>
@@ -356,20 +363,19 @@
     </div>
   </div>
 
-  <!-- status -->
   <div class="status" id="status">准备开始专注</div>
 
-  <!-- break suggestion -->
-  <div class="suggestion empty" id="suggestion">休息时这里会出现放松建议 ✨</div>
-
-  <!-- controls -->
-  <div class="btn-row">
-    <button class="btn-start" id="btnStart" title="开始计时">开始</button>
-    <button class="btn-pause" id="btnPause" title="暂停 / 继续" disabled>暂停</button>
-    <button class="btn-reset" id="btnReset" title="重置">重置</button>
+  <div class="suggestion" id="suggestion">
+    <span class="sug-icon">💪</span>
+    <span class="sug-text" id="sugText">站起来，双臂向上伸展，保持 10 秒</span>
   </div>
 
-  <!-- settings -->
+  <div class="btn-row">
+    <button class="btn-start" id="btnStart">开始</button>
+    <button class="btn-pause" id="btnPause" disabled>暂停</button>
+    <button class="btn-reset" id="btnReset">重置</button>
+  </div>
+
   <div class="settings">
     <div class="setting">
       <label for="studyMinutes">学习时长</label>
@@ -381,10 +387,8 @@
     </div>
   </div>
 
-  <!-- today -->
   <div class="today" id="todayCount">今日已完成: <strong>0</strong> 个番茄钟</div>
 
-  <!-- notification hint -->
   <div class="notif-hint" id="notifHint">🔔 已请求桌面通知权限，请允许以获得提醒</div>
 </div>
 
@@ -393,7 +397,6 @@
   const $time    = document.getElementById('timeDisplay');
   const $label   = document.getElementById('timeLabel');
   const $status  = document.getElementById('status');
-  const $sug     = document.getElementById('suggestion');
   const $ringFg  = document.getElementById('ringFg');
   const $today   = document.getElementById('todayCount');
   const $hint    = document.getElementById('notifHint');
@@ -404,15 +407,17 @@
   const $breakIn = document.getElementById('breakMinutes');
   const $themeToggle = document.getElementById('themeToggle');
 
-  const CIRCUMFERENCE = 2 * Math.PI * 90; // ~565.486
+  const CIRCUMFERENCE = 2 * Math.PI * 90;
 
   // ── state ─────────────────────────────────────────────────
   const STATE = { IDLE: 'idle', STUDYING: 'studying', BREAKING: 'breaking', PAUSED: 'paused' };
-  let mode      = STATE.IDLE;       // current phase
-  let totalSec  = 0;               // total seconds for current phase
-  let remainSec = 0;               // seconds remaining
-  let endTs     = 0;               // Date.now() when this phase ends (ms)
+  let mode      = STATE.IDLE;
+  let totalSec  = 0;
+  let remainSec = 0;
+  let endTs     = 0;
   let timerId   = null;
+  let sugTimerId = null;
+  let sugIndex   = -1;
   let audioCtx  = null;
 
   // ── relax suggestions ────────────────────────────────────
@@ -438,7 +443,35 @@
     return SUGGESTIONS[Math.floor(Math.random() * SUGGESTIONS.length)];
   }
 
-  // ── audio (simple ding) ─────────────────────────────────
+  const $sugText = document.getElementById('sugText');
+  const $sugIcon = document.querySelector('.sug-icon');
+
+  function showSuggestion(index) {
+    if (index >= 0 && index < SUGGESTIONS.length) {
+      sugIndex = index;
+    } else {
+      sugIndex = Math.floor(Math.random() * SUGGESTIONS.length);
+    }
+    $sugText.textContent = SUGGESTIONS[sugIndex];
+    $sugIcon.textContent = mode === STATE.BREAKING ? '💡' : '💪';
+  }
+
+  function cycleSuggestion() {
+    var next = (sugIndex + 1) % SUGGESTIONS.length;
+    showSuggestion(next);
+  }
+
+  function startSugCycling() {
+    stopSugCycling();
+    showSuggestion(-1);
+    sugTimerId = setInterval(cycleSuggestion, 10000);
+  }
+
+  function stopSugCycling() {
+    if (sugTimerId !== null) { clearInterval(sugTimerId); sugTimerId = null; }
+  }
+
+  // ── audio ───────────────────────────────────────────────
   function playChime() {
     try {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -455,7 +488,7 @@
         osc.start(now + i * 0.15);
         osc.stop(now + i * 0.15 + 0.5);
       });
-    } catch (_) { /* audio not supported */ }
+    } catch (_) {}
   }
 
   // ── notifications ───────────────────────────────────────
@@ -475,7 +508,7 @@
     }
   }
 
-  // ── today count (localStorage) ──────────────────────────
+  // ── today count ──────────────────────────────────────────
   function getTodayKey() {
     const d = new Date();
     return 'pomodoro_' + d.getFullYear() + '_' + (d.getMonth()+1) + '_' + d.getDate();
@@ -502,10 +535,7 @@
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        mode: mode,
-        totalSec: totalSec,
-        remainSec: remainSec,
-        endTs: endTs,
+        mode, totalSec, remainSec, endTs,
         studyMin: $studyIn.value,
         breakMin: $breakIn.value,
         pausedInBreak: mode === STATE.PAUSED && $ringFg.classList.contains('breaking'),
@@ -557,7 +587,6 @@
     } else {
       applyTheme(getPreferredTheme());
     }
-    // listen for system theme changes when no user preference is saved
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
       var stored = null;
       try { stored = localStorage.getItem(THEME_KEY); } catch (e) {}
@@ -590,9 +619,8 @@
     $status.classList.remove('breaking');
     $status.textContent = '专注学习中…';
     $label.textContent = '分钟';
-    $sug.classList.add('empty');
-    $sug.textContent = '休息时这里会出现放松建议 ✨';
     $btnPause.textContent = '暂停';
+    if (sugIndex >= 0) showSuggestion(sugIndex);
     updateRing();
     renderTime();
     startTicking();
@@ -608,9 +636,8 @@
     $status.classList.add('breaking');
     $status.textContent = '休息时间 ~ 活动一下吧';
     $label.textContent = '休息';
-    $sug.classList.remove('empty');
-    $sug.textContent = '💡 ' + randomSuggestion();
     $btnPause.textContent = '暂停';
+    if (sugIndex >= 0) showSuggestion(sugIndex);
     updateRing();
     renderTime();
     startTicking();
@@ -654,7 +681,6 @@
   function doStart() {
     requestNotification();
     if (mode === STATE.PAUSED) {
-      // resume
       mode = $ringFg.classList.contains('breaking') ? STATE.BREAKING : STATE.STUDYING;
       endTs = Date.now() + remainSec * 1000;
       $status.textContent = mode === STATE.STUDYING ? '专注学习中…' : '休息时间 ~ 活动一下吧';
@@ -691,12 +717,11 @@
     $status.classList.remove('breaking');
     $status.textContent = '准备开始专注';
     $label.textContent = '分钟';
-    $sug.classList.add('empty');
-    $sug.textContent = '休息时这里会出现放松建议 ✨';
     $btnStart.textContent = '开始';
     $btnStart.disabled = false;
     $btnPause.disabled = true;
     $btnPause.textContent = '暂停';
+    startSugCycling();
     updateRing();
     renderTime();
   }
@@ -725,13 +750,11 @@
     initTheme();
     var saved = loadSavedState();
 
-    // Restore settings
     if (saved) {
       $studyIn.value = saved.studyMin || 45;
       $breakIn.value = saved.breakMin || 5;
     }
 
-    // ── PAUSED: restore paused state ──
     if (saved && saved.mode === STATE.PAUSED) {
       mode = STATE.PAUSED;
       totalSec = saved.totalSec;
@@ -742,13 +765,7 @@
       $status.classList.toggle('breaking', pausedInBreak);
       $status.textContent = '已暂停';
       $label.textContent = pausedInBreak ? '休息' : '分钟';
-      if (pausedInBreak) {
-        $sug.classList.remove('empty');
-        $sug.textContent = '💡 ' + randomSuggestion();
-      } else {
-        $sug.classList.add('empty');
-        $sug.textContent = '休息时这里会出现放松建议 ✨';
-      }
+      startSugCycling();
       $btnStart.textContent = '继续';
       $btnStart.disabled = false;
       $btnPause.disabled = true;
@@ -760,11 +777,9 @@
       return;
     }
 
-    // ── STUDYING / BREAKING: resume or expire ──
     if (saved && (saved.mode === STATE.STUDYING || saved.mode === STATE.BREAKING)) {
       var elapsed = Math.round((Date.now() - saved.savedAt) / 1000);
       if (elapsed < saved.remainSec) {
-        // Still running — resume
         mode = saved.mode;
         totalSec = saved.totalSec;
         remainSec = saved.remainSec - elapsed;
@@ -774,13 +789,7 @@
         $status.classList.toggle('breaking', inBreak);
         $status.textContent = inBreak ? '休息时间 ~ 活动一下吧' : '专注学习中…';
         $label.textContent = inBreak ? '休息' : '分钟';
-        if (inBreak) {
-          $sug.classList.remove('empty');
-          $sug.textContent = '💡 ' + randomSuggestion();
-        } else {
-          $sug.classList.add('empty');
-          $sug.textContent = '休息时这里会出现放松建议 ✨';
-        }
+        startSugCycling();
         $btnStart.disabled = true;
         $btnPause.disabled = false;
         $btnPause.textContent = '暂停';
@@ -791,17 +800,16 @@
         bindEvents();
         return;
       }
-      // Timer expired while away
       if (saved.mode === STATE.STUDYING) incrementTodayCount();
       clearSavedState();
     }
 
-    // ── Default: IDLE ──
     totalSec = Math.max(1, parseInt($studyIn.value, 10) || 45) * 60;
     remainSec = totalSec;
     updateRing();
     renderTime();
     renderToday();
+    startSugCycling();
     bindEvents();
   }
 
