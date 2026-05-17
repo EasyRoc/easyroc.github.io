@@ -240,44 +240,123 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
+      justify-content: space-between;
       gap: 12px 24px;
       flex-shrink: 0;
     }
 
-    .brand-row {
+    .top-bar-right {
+      position: relative;
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
-      gap: 10px 20px;
+      margin-left: auto;
     }
 
-    .brand {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      text-shadow: var(--shadow-text);
-    }
-
-    .nav-pill {
+    .hamburger-btn {
       display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3.5px;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
     }
 
-    .nav-pill a {
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--hero-muted);
-      border-radius: var(--radius-pill);
-      text-shadow: var(--shadow-text);
-      transition: color 0.2s, background 0.2s;
-    }
-
-    .nav-pill a:hover {
-      color: var(--hero-text);
+    .hamburger-btn:hover {
       background: var(--glass-inner);
     }
+
+    .hamburger-bar {
+      display: block;
+      width: 15px;
+      height: 1.5px;
+      background: var(--hero-text);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.2s ease;
+      transform-origin: center;
+    }
+
+    .hamburger-btn[aria-expanded="true"] .hamburger-bar:nth-child(1) {
+      transform: translateY(5px) rotate(45deg);
+    }
+
+    .hamburger-btn[aria-expanded="true"] .hamburger-bar:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+
+    .hamburger-btn[aria-expanded="true"] .hamburger-bar:nth-child(3) {
+      transform: translateY(-5px) rotate(-45deg);
+    }
+
+    .hamburger-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 140px;
+      padding: 6px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      backdrop-filter: blur(20px) saturate(1.8);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.22);
+      opacity: 0;
+      transform: translateY(-6px) scale(0.96);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      pointer-events: none;
+    }
+
+    [data-theme="light"] .hamburger-menu {
+      box-shadow: 0 12px 36px rgba(30,40,60,0.12);
+    }
+
+    .hamburger-menu.is-open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .hamburger-item {
+      display: block;
+      padding: 9px 15px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--hero-text);
+      border-radius: 10px;
+      text-shadow: var(--shadow-text);
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .hamburger-item:hover {
+      background: var(--glass-inner);
+    }
+
+    @media (max-width: 480px) {
+      .hamburger-btn {
+        width: 30px;
+        height: 30px;
+        gap: 3px;
+        border-radius: 7px;
+      }
+      .hamburger-bar {
+        width: 13px;
+      }
+      .hamburger-btn[aria-expanded="true"] .hamburger-bar:nth-child(1) {
+        transform: translateY(4.5px) rotate(45deg);
+      }
+      .hamburger-btn[aria-expanded="true"] .hamburger-bar:nth-child(3) {
+        transform: translateY(-4.5px) rotate(-45deg);
+      }
+    }
+
 
     /* —— 中间主区：搜索框靠上（与顶栏留出间距），为底部 Dock / 底栏留出空间 —— */
     .hero {
@@ -643,10 +722,16 @@
 
   <div class="page">
     <header class="top-bar">
-      <div class="brand-row">
-        <nav class="nav-pill" aria-label="快捷分区">
-          <a href="blog.html">博客</a>
-        </nav>
+      <div class="top-bar-right">
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="菜单" aria-expanded="false">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+        <div class="hamburger-menu" id="hamburger-menu">
+          <a class="hamburger-item" href="blog.html">博客</a>
+          <a class="hamburger-item" href="mindful-rest.html">正念休息</a>
+        </div>
       </div>
     </header>
 
@@ -1038,6 +1123,26 @@
             var url = v;
             if (!/^https?:\/\//i.test(url)) url = "https://" + url;
             window.open(url, "_blank", "noopener,noreferrer");
+          }
+        });
+      }
+
+      /* —— 汉堡菜单 —— */
+      var hamburgerBtn = document.getElementById("hamburger-btn");
+      var hamburgerMenu = document.getElementById("hamburger-menu");
+
+      if (hamburgerBtn && hamburgerMenu) {
+        hamburgerBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          var expanded = hamburgerBtn.getAttribute("aria-expanded") === "true";
+          hamburgerBtn.setAttribute("aria-expanded", String(!expanded));
+          hamburgerMenu.classList.toggle("is-open", !expanded);
+        });
+
+        document.addEventListener("click", function (e) {
+          if (!hamburgerMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+            hamburgerBtn.setAttribute("aria-expanded", "false");
+            hamburgerMenu.classList.remove("is-open");
           }
         });
       }

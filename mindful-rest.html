@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>久坐提醒 — 别忘了休息</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any">
+<link rel="apple-touch-icon" href="favicon.svg">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f2eb;
+    --card-bg: #fffef9;
+    --text: #3d3929;
+    --text-muted: #8c8670;
+    --primary: #6b8f71;
+    --primary-light: #a3c4a8;
+    --accent: #e07a5f;
+    --ring-bg: #e8e4d8;
+    --shadow: 0 4px 24px rgba(0,0,0,0.06);
+    --radius: 20px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 48px 40px 40px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    transition: box-shadow 0.3s;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: 0.02em;
+  }
+  .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  /* ---- ring ---- */
+  .ring-wrap {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 24px;
+  }
+  .ring-wrap svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+  .ring-bg {
+    fill: none;
+    stroke: var(--ring-bg);
+    stroke-width: 10;
+  }
+  .ring-fg {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.9s linear, stroke 0.5s;
+  }
+  .ring-fg.breaking { stroke: var(--accent); }
+
+  .timer-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .time {
+    font-size: 3rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  .time-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* ---- status ---- */
+  .status {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    min-height: 1.4em;
+    transition: color 0.3s;
+  }
+  .status.breaking { color: var(--accent); font-weight: 500; }
+
+  /* ---- suggestion ---- */
+  .suggestion {
+    background: #fdf8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+    color: #6b5e4a;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s;
+    line-height: 1.5;
+  }
+  .suggestion.empty { opacity: 0.4; }
+
+  /* ---- buttons ---- */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  button {
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, opacity 0.2s;
+    letter-spacing: 0.02em;
+  }
+  button:active { transform: scale(0.96); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-start {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-start:hover:not(:disabled) { background: #5d7d63; }
+  .btn-pause {
+    background: #f0e8d8;
+    color: var(--text);
+  }
+  .btn-pause:hover:not(:disabled) { background: #e6dcc8; }
+  .btn-reset {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid #d5cfbf;
+  }
+  .btn-reset:hover:not(:disabled) { background: #f5f1e8; }
+
+  /* ---- settings ---- */
+  .settings {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .setting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .setting label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .setting input {
+    width: 64px;
+    text-align: center;
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 6px 4px;
+    border: 1.5px solid #d5cfbf;
+    border-radius: 10px;
+    background: #fdfcf7;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .setting input:focus { border-color: var(--primary); }
+
+  /* ---- today count ---- */
+  .today {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .today strong { color: var(--primary); font-weight: 600; }
+
+  /* ---- notification hint ---- */
+  .notif-hint {
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin-top: 12px;
+    display: none;
+  }
+  .notif-hint.show { display: block; }
+
+  @media (max-width: 440px) {
+    .card { padding: 32px 20px 28px; }
+    .ring-wrap { width: 180px; height: 180px; }
+    .time { font-size: 2.4rem; }
+    .settings { gap: 16px; }
+    button { padding: 10px 20px; font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>🧘 久坐提醒</h1>
+  <p class="subtitle">坐久了，记得起来活动一下</p>
+
+  <!-- progress ring -->
+  <div class="ring-wrap">
+    <svg viewBox="0 0 200 200">
+      <circle class="ring-bg" cx="100" cy="100" r="90"/>
+      <circle class="ring-fg" id="ringFg" cx="100" cy="100" r="90"
+              stroke-dasharray="565.486" stroke-dashoffset="0"/>
+    </svg>
+    <div class="timer-text">
+      <span class="time" id="timeDisplay">45:00</span>
+      <span class="time-label" id="timeLabel">分钟</span>
+    </div>
+  </div>
+
+  <!-- status -->
+  <div class="status" id="status">准备开始专注</div>
+
+  <!-- break suggestion -->
+  <div class="suggestion empty" id="suggestion">休息时这里会出现放松建议 ✨</div>
+
+  <!-- controls -->
+  <div class="btn-row">
+    <button class="btn-start" id="btnStart" title="开始计时">开始</button>
+    <button class="btn-pause" id="btnPause" title="暂停 / 继续" disabled>暂停</button>
+    <button class="btn-reset" id="btnReset" title="重置">重置</button>
+  </div>
+
+  <!-- settings -->
+  <div class="settings">
+    <div class="setting">
+      <label for="studyMinutes">学习时长</label>
+      <input type="number" id="studyMinutes" value="45" min="1" max="180" step="1">
+    </div>
+    <div class="setting">
+      <label for="breakMinutes">休息时长</label>
+      <input type="number" id="breakMinutes" value="5" min="1" max="60" step="1">
+    </div>
+  </div>
+
+  <!-- today -->
+  <div class="today" id="todayCount">今日已完成: <strong>0</strong> 个番茄钟</div>
+
+  <!-- notification hint -->
+  <div class="notif-hint" id="notifHint">🔔 已请求桌面通知权限，请允许以获得提醒</div>
+</div>
+
+<script>
+  // ── DOM refs ──────────────────────────────────────────────
+  const $time    = document.getElementById('timeDisplay');
+  const $label   = document.getElementById('timeLabel');
+  const $status  = document.getElementById('status');
+  const $sug     = document.getElementById('suggestion');
+  const $ringFg  = document.getElementById('ringFg');
+  const $today   = document.getElementById('todayCount');
+  const $hint    = document.getElementById('notifHint');
+  const $btnStart = document.getElementById('btnStart');
+  const $btnPause = document.getElementById('btnPause');
+  const $btnReset = document.getElementById('btnReset');
+  const $studyIn = document.getElementById('studyMinutes');
+  const $breakIn = document.getElementById('breakMinutes');
+
+  const CIRCUMFERENCE = 2 * Math.PI * 90; // ~565.486
+
+  // ── state ─────────────────────────────────────────────────
+  const STATE = { IDLE: 'idle', STUDYING: 'studying', BREAKING: 'breaking', PAUSED: 'paused' };
+  let mode      = STATE.IDLE;       // current phase
+  let totalSec  = 0;               // total seconds for current phase
+  let remainSec = 0;               // seconds remaining
+  let endTs     = 0;               // Date.now() when this phase ends (ms)
+  let timerId   = null;
+  let audioCtx  = null;
+
+  // ── relax suggestions ────────────────────────────────────
+  const SUGGESTIONS = [
+    '站起来，双臂向上伸展，保持 10 秒',
+    '缓慢转动颈部，左右各 5 圈',
+    '闭上眼睛，深呼吸 10 次',
+    '站起来走动 2 分钟，看看窗外',
+    '耸肩 10 次，放松肩颈肌肉',
+    '双手交叉抱头，轻轻后仰拉伸',
+    '转转手腕和脚踝，各 10 圈',
+    '站起来做 5 个深蹲，激活下肢',
+    '离开座位，去接一杯水喝',
+    '掌心搓热后敷在眼睛上，放松 30 秒',
+    '侧身拉伸：左手叉腰，右手上举向左弯',
+    '做 3 次大猫伸展式 (坐姿猫牛式)',
+    '站起来踮脚尖 15 次，促进腿部循环',
+    '按压太阳穴和风池穴各 30 秒',
+    '站起来扭腰画圈，左右各 5 圈',
+  ];
+
+  function randomSuggestion() {
+    return SUGGESTIONS[Math.floor(Math.random() * SUGGESTIONS.length)];
+  }
+
+  // ── audio (simple ding) ─────────────────────────────────
+  function playChime() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime;
+      [523.25, 659.25, 783.99].forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.18, now + i * 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + i * 0.15);
+        osc.stop(now + i * 0.15 + 0.5);
+      });
+    } catch (_) { /* audio not supported */ }
+  }
+
+  // ── notifications ───────────────────────────────────────
+  function notify(title, body) {
+    if (Notification.permission === 'granted') {
+      new Notification(title, { body, icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="80">🧘</text></svg>' });
+    }
+  }
+
+  function requestNotification() {
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().then(p => {
+        if (p === 'denied') $hint.classList.add('show');
+      });
+    } else if (Notification.permission === 'denied') {
+      $hint.classList.add('show');
+    }
+  }
+
+  // ── today count (localStorage) ──────────────────────────
+  function getTodayKey() {
+    const d = new Date();
+    return 'pomodoro_' + d.getFullYear() + '_' + (d.getMonth()+1) + '_' + d.getDate();
+  }
+
+  function getTodayCount() {
+    return parseInt(localStorage.getItem(getTodayKey()) || '0', 10);
+  }
+
+  function incrementTodayCount() {
+    const key = getTodayKey();
+    const n = parseInt(localStorage.getItem(key) || '0', 10) + 1;
+    localStorage.setItem(key, String(n));
+    renderToday();
+  }
+
+  function renderToday() {
+    $today.innerHTML = '今日已完成: <strong>' + getTodayCount() + '</strong> 个番茄钟';
+  }
+
+  // ── persistence ──────────────────────────────────────────
+  const STORAGE_KEY = 'mindful_rest_state';
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        mode: mode,
+        totalSec: totalSec,
+        remainSec: remainSec,
+        endTs: endTs,
+        studyMin: $studyIn.value,
+        breakMin: $breakIn.value,
+        pausedInBreak: mode === STATE.PAUSED && $ringFg.classList.contains('breaking'),
+        savedAt: Date.now()
+      }));
+    } catch (e) {}
+  }
+
+  function clearSavedState() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+
+  function loadSavedState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function updateRing() {
+    if (totalSec <= 0) {
+      $ringFg.style.strokeDashoffset = '0';
+      return;
+    }
+    const ratio = Math.max(0, remainSec / totalSec);
+    $ringFg.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - ratio));
+  }
+
+  function renderTime() {
+    const m = Math.floor(remainSec / 60);
+    const s = remainSec % 60;
+    $time.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  // ── phase switching ─────────────────────────────────────
+  function switchToStudying() {
+    mode = STATE.STUDYING;
+    totalSec = Math.max(1, parseInt($studyIn.value, 10) || 45) * 60;
+    remainSec = totalSec;
+    endTs = Date.now() + remainSec * 1000;
+    $ringFg.classList.remove('breaking');
+    $status.classList.remove('breaking');
+    $status.textContent = '专注学习中…';
+    $label.textContent = '分钟';
+    $sug.classList.add('empty');
+    $sug.textContent = '休息时这里会出现放松建议 ✨';
+    $btnPause.textContent = '暂停';
+    updateRing();
+    renderTime();
+    startTicking();
+    saveState();
+  }
+
+  function switchToBreaking() {
+    mode = STATE.BREAKING;
+    totalSec = Math.max(1, parseInt($breakIn.value, 10) || 5) * 60;
+    remainSec = totalSec;
+    endTs = Date.now() + remainSec * 1000;
+    $ringFg.classList.add('breaking');
+    $status.classList.add('breaking');
+    $status.textContent = '休息时间 ~ 活动一下吧';
+    $label.textContent = '休息';
+    $sug.classList.remove('empty');
+    $sug.textContent = '💡 ' + randomSuggestion();
+    $btnPause.textContent = '暂停';
+    updateRing();
+    renderTime();
+    startTicking();
+    playChime();
+    notify('该休息啦 🧘', '站起来活动一下吧！久坐对身体不好。');
+    saveState();
+  }
+
+  function finishPhase() {
+    stopTicker();
+    if (mode === STATE.STUDYING) {
+      incrementTodayCount();
+      switchToBreaking();
+    } else if (mode === STATE.BREAKING) {
+      playChime();
+      notify('休息结束 📚', '该回去继续学习啦，加油！');
+      switchToStudying();
+    }
+  }
+
+  // ── ticker ───────────────────────────────────────────────
+  function tick() {
+    if (mode !== STATE.STUDYING && mode !== STATE.BREAKING) return;
+    remainSec = Math.max(0, Math.round((endTs - Date.now()) / 1000));
+    renderTime();
+    updateRing();
+    if (remainSec <= 0) finishPhase();
+  }
+
+  function startTicking() {
+    stopTicker();
+    tick();
+    timerId = setInterval(tick, 1000);
+  }
+
+  function stopTicker() {
+    if (timerId !== null) { clearInterval(timerId); timerId = null; }
+  }
+
+  // ── controls ─────────────────────────────────────────────
+  function doStart() {
+    requestNotification();
+    if (mode === STATE.PAUSED) {
+      // resume
+      mode = $ringFg.classList.contains('breaking') ? STATE.BREAKING : STATE.STUDYING;
+      endTs = Date.now() + remainSec * 1000;
+      $status.textContent = mode === STATE.STUDYING ? '专注学习中…' : '休息时间 ~ 活动一下吧';
+      $status.classList.toggle('breaking', mode === STATE.BREAKING);
+      $btnPause.textContent = '暂停';
+      startTicking();
+      saveState();
+    } else {
+      switchToStudying();
+    }
+    $btnStart.disabled = true;
+    $btnPause.disabled = false;
+  }
+
+  function doPause() {
+    stopTicker();
+    mode = STATE.PAUSED;
+    $status.textContent = '已暂停';
+    $status.classList.remove('breaking');
+    $btnStart.disabled = false;
+    $btnPause.disabled = true;
+    $btnStart.textContent = '继续';
+    saveState();
+  }
+
+  function doReset() {
+    stopTicker();
+    clearSavedState();
+    mode = STATE.IDLE;
+    totalSec = Math.max(1, parseInt($studyIn.value, 10) || 45) * 60;
+    remainSec = totalSec;
+    endTs = 0;
+    $ringFg.classList.remove('breaking');
+    $status.classList.remove('breaking');
+    $status.textContent = '准备开始专注';
+    $label.textContent = '分钟';
+    $sug.classList.add('empty');
+    $sug.textContent = '休息时这里会出现放松建议 ✨';
+    $btnStart.textContent = '开始';
+    $btnStart.disabled = false;
+    $btnPause.disabled = true;
+    $btnPause.textContent = '暂停';
+    updateRing();
+    renderTime();
+  }
+
+  // ── init ─────────────────────────────────────────────────
+  function bindEvents() {
+    $btnStart.addEventListener('click', doStart);
+    $btnPause.addEventListener('click', doPause);
+    $btnReset.addEventListener('click', doReset);
+    $studyIn.addEventListener('change', function () {
+      if (mode === STATE.IDLE) {
+        totalSec = Math.max(1, parseInt($studyIn.value, 10) || 45) * 60;
+        remainSec = totalSec;
+        updateRing();
+        renderTime();
+        saveState();
+      }
+    });
+    $breakIn.addEventListener('change', function () {
+      if (mode === STATE.IDLE) saveState();
+    });
+  }
+
+  function init() {
+    var saved = loadSavedState();
+
+    // Restore settings
+    if (saved) {
+      $studyIn.value = saved.studyMin || 45;
+      $breakIn.value = saved.breakMin || 5;
+    }
+
+    // ── PAUSED: restore paused state ──
+    if (saved && saved.mode === STATE.PAUSED) {
+      mode = STATE.PAUSED;
+      totalSec = saved.totalSec;
+      remainSec = saved.remainSec;
+      endTs = 0;
+      var pausedInBreak = saved.pausedInBreak;
+      $ringFg.classList.toggle('breaking', pausedInBreak);
+      $status.classList.toggle('breaking', pausedInBreak);
+      $status.textContent = '已暂停';
+      $label.textContent = pausedInBreak ? '休息' : '分钟';
+      if (pausedInBreak) {
+        $sug.classList.remove('empty');
+        $sug.textContent = '💡 ' + randomSuggestion();
+      } else {
+        $sug.classList.add('empty');
+        $sug.textContent = '休息时这里会出现放松建议 ✨';
+      }
+      $btnStart.textContent = '继续';
+      $btnStart.disabled = false;
+      $btnPause.disabled = true;
+      $btnPause.textContent = '暂停';
+      updateRing();
+      renderTime();
+      renderToday();
+      bindEvents();
+      return;
+    }
+
+    // ── STUDYING / BREAKING: resume or expire ──
+    if (saved && (saved.mode === STATE.STUDYING || saved.mode === STATE.BREAKING)) {
+      var elapsed = Math.round((Date.now() - saved.savedAt) / 1000);
+      if (elapsed < saved.remainSec) {
+        // Still running — resume
+        mode = saved.mode;
+        totalSec = saved.totalSec;
+        remainSec = saved.remainSec - elapsed;
+        endTs = Date.now() + remainSec * 1000;
+        var inBreak = mode === STATE.BREAKING;
+        $ringFg.classList.toggle('breaking', inBreak);
+        $status.classList.toggle('breaking', inBreak);
+        $status.textContent = inBreak ? '休息时间 ~ 活动一下吧' : '专注学习中…';
+        $label.textContent = inBreak ? '休息' : '分钟';
+        if (inBreak) {
+          $sug.classList.remove('empty');
+          $sug.textContent = '💡 ' + randomSuggestion();
+        } else {
+          $sug.classList.add('empty');
+          $sug.textContent = '休息时这里会出现放松建议 ✨';
+        }
+        $btnStart.disabled = true;
+        $btnPause.disabled = false;
+        $btnPause.textContent = '暂停';
+        updateRing();
+        renderTime();
+        renderToday();
+        startTicking();
+        bindEvents();
+        return;
+      }
+      // Timer expired while away
+      if (saved.mode === STATE.STUDYING) incrementTodayCount();
+      clearSavedState();
+    }
+
+    // ── Default: IDLE ──
+    totalSec = Math.max(1, parseInt($studyIn.value, 10) || 45) * 60;
+    remainSec = totalSec;
+    updateRing();
+    renderTime();
+    renderToday();
+    bindEvents();
+  }
+
+  init();
+</script>
+
+</body>
+</html>
