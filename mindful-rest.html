@@ -20,6 +20,87 @@
     --ring-bg: #e8e4d8;
     --shadow: 0 4px 24px rgba(0,0,0,0.06);
     --radius: 20px;
+    --sug-bg: #fdf8f0;
+    --sug-text: #6b5e4a;
+    --btn-pause-bg: #f0e8d8;
+    --btn-pause-text: var(--text);
+    --btn-pause-hover: #e6dcc8;
+    --btn-reset-border: #d5cfbf;
+    --btn-reset-hover: #f5f1e8;
+    --input-bg: #fdfcf7;
+    --input-border: #d5cfbf;
+    --toggle-bg: #e8e4d8;
+  }
+
+  [data-theme="light"] {
+    --bg: #f5f2eb;
+    --card-bg: #fffef9;
+    --text: #3d3929;
+    --text-muted: #8c8670;
+    --primary: #6b8f71;
+    --primary-light: #a3c4a8;
+    --accent: #e07a5f;
+    --ring-bg: #e8e4d8;
+    --shadow: 0 4px 24px rgba(0,0,0,0.06);
+    --radius: 20px;
+    --sug-bg: #fdf8f0;
+    --sug-text: #6b5e4a;
+    --btn-pause-bg: #f0e8d8;
+    --btn-pause-text: var(--text);
+    --btn-pause-hover: #e6dcc8;
+    --btn-reset-border: #d5cfbf;
+    --btn-reset-hover: #f5f1e8;
+    --input-bg: #fdfcf7;
+    --input-border: #d5cfbf;
+    --toggle-bg: #e8e4d8;
+  }
+
+  [data-theme="dark"] {
+    --bg: #1a1a2e;
+    --card-bg: #252540;
+    --text: #e8e4d8;
+    --text-muted: #9a94a8;
+    --primary: #7db784;
+    --primary-light: #3d5a40;
+    --accent: #e07a5f;
+    --ring-bg: #353550;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+    --radius: 20px;
+    --sug-bg: #2f2f4a;
+    --sug-text: #c8c0b0;
+    --btn-pause-bg: #353550;
+    --btn-pause-text: #e8e4d8;
+    --btn-pause-hover: #40405e;
+    --btn-reset-border: #454560;
+    --btn-reset-hover: #2f2f4a;
+    --input-bg: #2a2a45;
+    --input-border: #454560;
+    --toggle-bg: #353550;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --bg: #1a1a2e;
+      --card-bg: #252540;
+      --text: #e8e4d8;
+      --text-muted: #9a94a8;
+      --primary: #7db784;
+      --primary-light: #3d5a40;
+      --accent: #e07a5f;
+      --ring-bg: #353550;
+      --shadow: 0 4px 24px rgba(0,0,0,0.3);
+      --radius: 20px;
+      --sug-bg: #2f2f4a;
+      --sug-text: #c8c0b0;
+      --btn-pause-bg: #353550;
+      --btn-pause-text: #e8e4d8;
+      --btn-pause-hover: #40405e;
+      --btn-reset-border: #454560;
+      --btn-reset-hover: #2f2f4a;
+      --input-bg: #2a2a45;
+      --input-border: #454560;
+      --toggle-bg: #353550;
+    }
   }
 
   body {
@@ -44,13 +125,40 @@
     transition: box-shadow 0.3s;
   }
 
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .card-header h1 {
+    margin-bottom: 0;
+  }
   h1 {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--text);
-    margin-bottom: 4px;
     letter-spacing: 0.02em;
   }
+  .theme-toggle {
+    font-size: 1.3rem;
+    background: var(--toggle-bg);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.15s;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .theme-toggle:active { transform: scale(0.9); }
+  .theme-toggle:hover { filter: brightness(1.1); }
   .subtitle {
     font-size: 0.85rem;
     color: var(--text-muted);
@@ -116,12 +224,12 @@
 
   /* ---- suggestion ---- */
   .suggestion {
-    background: #fdf8f0;
+    background: var(--sug-bg);
     border-radius: 12px;
     padding: 16px 20px;
     margin-bottom: 24px;
     font-size: 0.95rem;
-    color: #6b5e4a;
+    color: var(--sug-text);
     min-height: 52px;
     display: flex;
     align-items: center;
@@ -158,16 +266,16 @@
   }
   .btn-start:hover:not(:disabled) { background: #5d7d63; }
   .btn-pause {
-    background: #f0e8d8;
-    color: var(--text);
+    background: var(--btn-pause-bg);
+    color: var(--btn-pause-text);
   }
-  .btn-pause:hover:not(:disabled) { background: #e6dcc8; }
+  .btn-pause:hover:not(:disabled) { background: var(--btn-pause-hover); }
   .btn-reset {
     background: transparent;
     color: var(--text-muted);
-    border: 1.5px solid #d5cfbf;
+    border: 1.5px solid var(--btn-reset-border);
   }
-  .btn-reset:hover:not(:disabled) { background: #f5f1e8; }
+  .btn-reset:hover:not(:disabled) { background: var(--btn-reset-hover); }
 
   /* ---- settings ---- */
   .settings {
@@ -192,9 +300,9 @@
     font-family: inherit;
     font-size: 0.95rem;
     padding: 6px 4px;
-    border: 1.5px solid #d5cfbf;
+    border: 1.5px solid var(--input-border);
     border-radius: 10px;
-    background: #fdfcf7;
+    background: var(--input-bg);
     color: var(--text);
     outline: none;
     transition: border-color 0.2s;
@@ -229,7 +337,10 @@
 <body>
 
 <div class="card">
-  <h1>🧘 久坐提醒</h1>
+  <div class="card-header">
+    <h1>🧘 久坐提醒</h1>
+    <button class="theme-toggle" id="themeToggle" title="切换暗黑/明亮主题">🌙</button>
+  </div>
   <p class="subtitle">坐久了，记得起来活动一下</p>
 
   <!-- progress ring -->
@@ -291,6 +402,7 @@
   const $btnReset = document.getElementById('btnReset');
   const $studyIn = document.getElementById('studyMinutes');
   const $breakIn = document.getElementById('breakMinutes');
+  const $themeToggle = document.getElementById('themeToggle');
 
   const CIRCUMFERENCE = 2 * Math.PI * 90; // ~565.486
 
@@ -412,6 +524,47 @@
       return raw ? JSON.parse(raw) : null;
     } catch (e) { return null; }
   }
+
+  // ── theme ──────────────────────────────────────────────────
+  const THEME_KEY = 'mindful_rest_theme';
+
+  function getPreferredTheme() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      $themeToggle.textContent = '☀️';
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      $themeToggle.textContent = '🌙';
+    }
+  }
+
+  function toggleTheme() {
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  }
+
+  function initTheme() {
+    var saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+    if (saved) {
+      applyTheme(saved);
+    } else {
+      applyTheme(getPreferredTheme());
+    }
+    // listen for system theme changes when no user preference is saved
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+      var stored = null;
+      try { stored = localStorage.getItem(THEME_KEY); } catch (e) {}
+      if (!stored) applyTheme(getPreferredTheme());
+    });
+  }
+
   function updateRing() {
     if (totalSec <= 0) {
       $ringFg.style.strokeDashoffset = '0';
@@ -565,9 +718,11 @@
     $breakIn.addEventListener('change', function () {
       if (mode === STATE.IDLE) saveState();
     });
+    $themeToggle.addEventListener('click', toggleTheme);
   }
 
   function init() {
+    initTheme();
     var saved = loadSavedState();
 
     // Restore settings
