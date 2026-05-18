@@ -323,15 +323,6 @@
   }
   .today strong { color: var(--primary); font-weight: 600; }
 
-  /* notification hint */
-  .notif-hint {
-    font-size: 0.72rem;
-    color: var(--accent);
-    margin-top: 12px;
-    display: none;
-  }
-  .notif-hint.show { display: block; }
-
   @media (max-width: 440px) {
     .card { padding: 28px 18px 24px; }
     .ring-wrap { width: 170px; height: 170px; }
@@ -389,7 +380,6 @@
 
   <div class="today" id="todayCount">今日已完成: <strong>0</strong> 个番茄钟</div>
 
-  <div class="notif-hint" id="notifHint">🔔 已请求桌面通知权限，请允许以获得提醒</div>
 </div>
 
 <script>
@@ -399,7 +389,6 @@
   const $status  = document.getElementById('status');
   const $ringFg  = document.getElementById('ringFg');
   const $today   = document.getElementById('todayCount');
-  const $hint    = document.getElementById('notifHint');
   const $btnStart = document.getElementById('btnStart');
   const $btnPause = document.getElementById('btnPause');
   const $btnReset = document.getElementById('btnReset');
@@ -419,6 +408,7 @@
   let sugTimerId = null;
   let sugIndex   = -1;
   let audioCtx  = null;
+  let swReg     = null;  // service worker registration
 
   // ── relax suggestions ────────────────────────────────────
   const SUGGESTIONS = [
@@ -492,19 +482,64 @@
   }
 
   // ── notifications ───────────────────────────────────────
-  function notify(title, body) {
-    if (Notification.permission === 'granted') {
-      new Notification(title, { body, icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="80">🧘</text></svg>' });
+  var isLocalhost = (function () {
+    var loc = window.location;
+    return loc.protocol === 'file:' ||
+      /^localhost$/i.test(loc.hostname) ||
+      loc.hostname === '127.0.0.1';
+  })();
+
+  function registerSW() {
+    if (!isLocalhost && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(function (reg) {
+        swReg = reg;
+      }).catch(function () {});
     }
+  }
+
+  // native macOS notification via local server
+  function notifyNative(title, message, subtitle) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/native-notify', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+      title: title,
+      message: message,
+      subtitle: subtitle || ''
+    }));
+  }
+
+  // web notification fallback
+  function notifyWeb(title, body) {
+    if (Notification.permission !== 'granted') return;
+    var options = {
+      body: body,
+      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="80">🧘</text></svg>',
+      requireInteraction: true,
+      tag: 'mindful-rest-notif'
+    };
+    if (swReg && swReg.showNotification) {
+      swReg.showNotification(title, options);
+    } else {
+      try { new Notification(title, options); } catch (e) {}
+    }
+  }
+
+  function notify(title, body) {
+    // Try native notification first, then web fallback
+    if (isLocalhost) {
+      notifyNative(title, body, '');
+    }
+    notifyWeb(title, body);
   }
 
   function requestNotification() {
     if (Notification.permission === 'default') {
-      Notification.requestPermission().then(p => {
-        if (p === 'denied') $hint.classList.add('show');
+      Notification.requestPermission().then(function (p) {
+        if (p === 'granted') { registerSW(); }
       });
-    } else if (Notification.permission === 'denied') {
-      $hint.classList.add('show');
+    } else if (Notification.permission === 'granted') {
+      registerSW();
     }
   }
 
